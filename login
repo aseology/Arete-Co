@@ -63,7 +63,8 @@
 <script>
   // Initializing Supabase with your project details
   const supabaseUrl = 'https://etsztcmmyhephvrrdpyp.supabase.co';
-  const supabaseKey = 'YOUR_SUPABASE_ANON_KEY'; // <--- PASTE YOUR ACTUAL ANON KEY HERE
+  const supabaseKey = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImV0c3p0Y21teWhlcGh2cnJkcHlwIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzI3NDAxNzYsImV4cCI6MjA4ODMxNjE3Nn0.1bT6mjYxep88pnibQyyWikg2HtTUF8at5NGPXB3VmzI'
+';
   const supabase = supabase.createClient(supabaseUrl, supabaseKey);
 
   async function signIn() {
