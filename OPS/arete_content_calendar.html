@@ -1,0 +1,347 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Arete & Co. — Content Calendar</title>
+<link href="https://fonts.googleapis.com/css2?family=Space+Mono:wght@400;700&family=DM+Serif+Display:ital@0;1&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --charcoal:#1A1A1B;--obsidian:#111112;--linen:#F4F1EA;
+    --linen-dim:#b8b4a8;--moss:#7FFF00;--moss-dim:#5acc00;
+    --dark2:#2a2a2b;--gray:#888580;
+    --amber:#ffb347;--purple:#9b7fe8;--pink:#ff6eb4;
+    --li:#0a66c2;
+  }
+  *{box-sizing:border-box;margin:0;padding:0;}
+  body{background:var(--obsidian);color:var(--linen);font-family:'Space Mono',monospace;min-height:100vh;cursor:crosshair;}
+
+  /* HEADER */
+  header{background:var(--charcoal);border-bottom:2px solid var(--moss);padding:0 2rem;display:flex;align-items:center;justify-content:space-between;height:52px;position:sticky;top:0;z-index:100;}
+  .logo{font-weight:700;font-size:.75rem;letter-spacing:.25em;}
+  .logo span{color:var(--moss);}
+  .header-right{font-size:.55rem;letter-spacing:.15em;color:var(--gray);text-transform:uppercase;}
+
+  main{padding:1.5rem 2rem 4rem;max-width:1400px;margin:0 auto;}
+
+  /* WEEK TABS */
+  .week-tabs{display:flex;gap:4px;margin-bottom:1.5rem;border-bottom:1px solid var(--dark2);}
+  .week-tab{font-family:'Space Mono',monospace;font-size:.6rem;letter-spacing:.15em;text-transform:uppercase;color:var(--gray);padding:.6rem 1.2rem;cursor:pointer;border:none;background:none;border-bottom:2px solid transparent;margin-bottom:-1px;transition:all .2s;}
+  .week-tab:hover{color:var(--linen-dim);}
+  .week-tab.active{color:var(--moss);border-bottom-color:var(--moss);}
+  .summary-tab{margin-left:auto;}
+
+  /* WEEK PANEL */
+  .week-panel{display:none;animation:fadeIn .2s ease;}
+  .week-panel.active{display:block;}
+  @keyframes fadeIn{from{opacity:0;transform:translateY(4px)}to{opacity:1;transform:translateY(0)}}
+
+  /* WEEK HEADER */
+  .week-header{display:flex;align-items:flex-start;justify-content:space-between;margin-bottom:1.25rem;}
+  .week-meta{}
+  .week-label{font-size:.55rem;letter-spacing:.2em;color:var(--moss);text-transform:uppercase;margin-bottom:.3rem;}
+  .week-theme{font-family:'DM Serif Display',serif;font-size:1.6rem;color:var(--linen);line-height:1.1;margin-bottom:.25rem;}
+  .week-dates{font-size:.6rem;color:var(--gray);}
+  .pillar-legend{display:flex;gap:.5rem;flex-wrap:wrap;align-items:center;}
+  .pillar-chip{font-size:.5rem;font-weight:700;letter-spacing:.1em;text-transform:uppercase;padding:.25rem .6rem;border-radius:2px;}
+
+  /* GRID */
+  .cal-grid{display:grid;grid-template-columns:repeat(7,1fr);gap:6px;}
+  .day-col{}
+  .day-header{background:var(--charcoal);padding:.5rem .6rem;margin-bottom:4px;display:flex;flex-direction:column;gap:2px;}
+  .day-name{font-size:.55rem;font-weight:700;letter-spacing:.15em;text-transform:uppercase;color:var(--linen-dim);}
+  .day-name.post-day{color:var(--moss);}
+  .day-date{font-size:.5rem;color:var(--gray);}
+  .day-cell{background:var(--charcoal);border:1px solid var(--dark2);min-height:200px;position:relative;overflow:hidden;}
+  .day-cell.has-post{border-left:3px solid var(--moss);}
+  .day-cell.empty{border-style:dashed;opacity:.4;}
+  .post-content{padding:.6rem .65rem .65rem .65rem;}
+  .post-top{display:flex;align-items:center;gap:.35rem;margin-bottom:.5rem;}
+  .plat-badge{font-size:.48rem;font-weight:700;letter-spacing:.08em;padding:.2rem .45rem;border-radius:2px;color:#000;}
+  .type-tag{font-size:.48rem;font-weight:700;letter-spacing:.1em;color:var(--gray);}
+  .post-hook{font-size:.65rem;color:var(--linen-dim);line-height:1.6;margin-bottom:.5rem;}
+  .post-caption{font-size:.58rem;color:var(--gray);line-height:1.5;margin-bottom:.5rem;font-style:italic;}
+  .post-cta{font-size:.52rem;color:var(--moss-dim);border-top:1px solid var(--dark2);padding-top:.4rem;margin-top:.4rem;}
+  .post-bottom-bar{position:absolute;bottom:0;left:0;right:0;height:4px;}
+
+  /* SUMMARY TABLE */
+  .summary-table{width:100%;border-collapse:collapse;}
+  .summary-table th{background:var(--charcoal);font-size:.55rem;letter-spacing:.15em;text-transform:uppercase;color:var(--moss);padding:.7rem 1rem;text-align:left;border-bottom:2px solid var(--moss);white-space:nowrap;}
+  .summary-table td{padding:.75rem 1rem;font-size:.65rem;color:var(--linen-dim);border-bottom:1px solid var(--dark2);vertical-align:top;line-height:1.5;}
+  .summary-table tr:nth-child(even) td{background:var(--charcoal);}
+  .summary-table tr:hover td{background:rgba(127,255,0,.04);}
+  .week-cell{white-space:nowrap;}
+  .week-num{font-weight:700;color:var(--moss);display:block;font-size:.7rem;}
+  .week-th{color:var(--linen);display:block;font-style:italic;font-family:'DM Serif Display',serif;font-size:.85rem;}
+  .week-dr{color:var(--gray);font-size:.55rem;display:block;margin-top:.15rem;}
+  .hook-cell{color:var(--linen-dim);}
+  .hook-cell .hook-text{color:var(--linen);display:block;margin-bottom:.2rem;}
+
+  /* PRINT */
+  @media print{
+    header{position:static;}
+    .week-tabs{display:none;}
+    .week-panel{display:block!important;page-break-after:always;}
+  }
+</style>
+</head>
+<body>
+
+<header>
+  <div class="logo">ARETE <span>&</span> CO. <span style="color:var(--gray);font-weight:400;margin-left:.5rem;">/ CONTENT CALENDAR</span></div>
+  <div class="header-right">Instagram · LinkedIn · Threads · 3×/week · Mar–Apr 2026</div>
+</header>
+
+<main>
+  <div class="week-tabs">
+    <button class="week-tab active" onclick="switchWeek(0,this)">Week 1 — Establish</button>
+    <button class="week-tab" onclick="switchWeek(1,this)">Week 2 — Educate</button>
+    <button class="week-tab" onclick="switchWeek(2,this)">Week 3 — Connect</button>
+    <button class="week-tab" onclick="switchWeek(3,this)">Week 4 — Convert</button>
+    <button class="week-tab summary-tab" onclick="switchWeek(4,this)">All 4 Weeks ↗</button>
+  </div>
+
+  <!-- WEEK PANELS -->
+  <div id="week-0" class="week-panel active"></div>
+  <div id="week-1" class="week-panel"></div>
+  <div id="week-2" class="week-panel"></div>
+  <div id="week-3" class="week-panel"></div>
+  <div id="week-4" class="week-panel"></div>
+</main>
+
+<script>
+const PILLAR_COLORS = {
+  AUTHORITY: '#7FFF00',
+  STORY:     '#ffb347',
+  VALUE:     '#9b7fe8',
+  SOCIAL:    '#ff6eb4',
+};
+const PLAT_COLORS = {
+  IG: '#ff6eb4',
+  LI: '#0a66c2',
+  TH: '#9b7fe8',
+};
+const PLAT_NAMES = { IG:'Instagram', LI:'LinkedIn', TH:'Threads' };
+const DAYS = ['MON','TUE','WED','THU','FRI','SAT','SUN'];
+
+const WEEKS = [
+  {
+    label: 'WEEK 1', theme: 'Establish',
+    dates: ['Mar 9','Mar 10','Mar 11','Mar 12','Mar 13','Mar 14','Mar 15'],
+    posts: {
+      MON: {
+        pillar:'AUTHORITY', platform:'LI',
+        hook: "Most PMs don't have a process — they have a panic button.",
+        caption: "Share your philosophy on what separates reactive PMs from intentional ones. Break down the 3 things you always do before a project kicks off.",
+        cta: "Save this if you're building a real PM practice."
+      },
+      WED: {
+        pillar:'STORY', platform:'IG',
+        hook: "I started Arete & Co. because I kept watching good ideas die from bad execution.",
+        caption: "Founder story post. Why you built this, who it's for, and what excellence looks like in practice. Keep it personal and specific.",
+        cta: "Follow for more on building with intention."
+      },
+      FRI: {
+        pillar:'VALUE', platform:'TH',
+        hook: "5 questions I ask before taking on any new client.",
+        caption: "Share your qualification framework — the green flags, the red flags, and the one question that tells you everything.",
+        cta: "What would you add to this list?"
+      },
+    }
+  },
+  {
+    label: 'WEEK 2', theme: 'Educate',
+    dates: ['Mar 16','Mar 17','Mar 18','Mar 19','Mar 20','Mar 21','Mar 22'],
+    posts: {
+      MON: {
+        pillar:'VALUE', platform:'LI',
+        hook: "Your project doesn't have a scope problem. It has a communication problem.",
+        caption: "Break down how scope creep really starts — unclear expectations at the beginning. Walk through your Foundation Brief process and why it works.",
+        cta: 'Comment "BRIEF" and I\'ll send you the template.'
+      },
+      WED: {
+        pillar:'AUTHORITY', platform:'IG',
+        hook: "The 4 phases of every project I run — and what most people skip.",
+        caption: "Carousel post walking through your intake → execution → review → handoff framework. Each slide = one phase with 3 bullet points.",
+        cta: "Share with someone who needs a better system."
+      },
+      FRI: {
+        pillar:'SOCIAL', platform:'TH',
+        hook: "Hot take: a good PM should make themselves unnecessary by the end of a project.",
+        caption: "Short punchy opinion post. Invite disagreement. Explain your thinking in 3 sentences max.",
+        cta: "Agree or disagree? Drop it below."
+      },
+    }
+  },
+  {
+    label: 'WEEK 3', theme: 'Connect',
+    dates: ['Mar 23','Mar 24','Mar 25','Mar 26','Mar 27','Mar 28','Mar 29'],
+    posts: {
+      MON: {
+        pillar:'STORY', platform:'LI',
+        hook: "The client who changed how I work forever.",
+        caption: "Tell a real story (anonymized if needed) about a project that taught you something important. What went wrong, how you fixed it, what you learned.",
+        cta: "Every hard project is a systems upgrade."
+      },
+      WED: {
+        pillar:'SOCIAL', platform:'IG',
+        hook: "Tell me your project type and I'll tell you your biggest risk.",
+        caption: "Engagement post. Simple premise, easy to respond to. Reply to every comment — this is relationship building.",
+        cta: "Drop your project in the comments."
+      },
+      FRI: {
+        pillar:'VALUE', platform:'TH',
+        hook: "The offboarding checklist I send every client at project close.",
+        caption: "Share 5–7 items from your offboarding process. Position it as care and professionalism, not just admin.",
+        cta: "Save this for your next project wrap."
+      },
+    }
+  },
+  {
+    label: 'WEEK 4', theme: 'Convert',
+    dates: ['Mar 30','Mar 31','Apr 1','Apr 2','Apr 3','Apr 4','Apr 5'],
+    posts: {
+      MON: {
+        pillar:'AUTHORITY', platform:'LI',
+        hook: "What a $2,500 project actually looks like with Arete & Co.",
+        caption: "Walk through a real (or representative) project: the brief, phases, deliverables, outcome. Make the value tangible. No hype — just specifics.",
+        cta: "DM me if you're working on something like this."
+      },
+      WED: {
+        pillar:'VALUE', platform:'IG',
+        hook: "Free resource: the 3 documents every freelance PM needs before taking a client.",
+        caption: "Share your service agreement, SOW, and onboarding checklist as a value post. Describe what they do and why they matter.",
+        cta: "Link in bio to work with me."
+      },
+      FRI: {
+        pillar:'SOCIAL', platform:'TH',
+        hook: "What's one thing you wish you'd done differently at the start of a project?",
+        caption: "Simple community question. Authentic, low-effort, high-engagement. This is where you build relationships that become clients.",
+        cta: "I'll go first in the comments."
+      },
+    }
+  },
+];
+
+function buildWeekPanel(week, idx) {
+  const panel = document.getElementById(`week-${idx}`);
+
+  // Legend chips
+  const pillarsUsed = [...new Set(Object.values(week.posts).map(p=>p.pillar))];
+  const legendHTML = Object.entries(PILLAR_COLORS).map(([p,c])=>
+    `<span class="pillar-chip" style="background:${c};color:#111">${p}</span>`
+  ).join('');
+
+  let html = `
+    <div class="week-header">
+      <div class="week-meta">
+        <div class="week-label">${week.label} — March–April 2026</div>
+        <div class="week-theme">${week.theme}</div>
+        <div class="week-dates">${week.dates[0]} – ${week.dates[6]}</div>
+      </div>
+      <div class="pillar-legend">${legendHTML}</div>
+    </div>
+    <div class="cal-grid">`;
+
+  DAYS.forEach((day, i) => {
+    const post = week.posts[day];
+    const isPostDay = ['MON','WED','FRI'].includes(day);
+    const date = week.dates[i];
+
+    html += `<div class="day-col">
+      <div class="day-header">
+        <span class="day-name ${isPostDay?'post-day':''}">${day}</span>
+        <span class="day-date">${date}</span>
+      </div>`;
+
+    if (post) {
+      const pc = PILLAR_COLORS[post.pillar];
+      const platc = PLAT_COLORS[post.platform];
+      html += `
+      <div class="day-cell has-post" style="border-left-color:${pc}">
+        <div class="post-content">
+          <div class="post-top">
+            <span class="plat-badge" style="background:${platc};color:#fff">${post.platform}</span>
+            <span class="type-tag" style="color:${pc}">${post.pillar}</span>
+          </div>
+          <div class="post-hook">${post.hook}</div>
+          <div class="post-caption">${post.caption}</div>
+          <div class="post-cta">↗ ${post.cta}</div>
+        </div>
+        <div class="post-bottom-bar" style="background:${pc}"></div>
+      </div>`;
+    } else {
+      html += `<div class="day-cell empty"></div>`;
+    }
+    html += `</div>`;
+  });
+
+  html += `</div>`;
+  panel.innerHTML = html;
+}
+
+function buildSummary() {
+  const panel = document.getElementById('week-4');
+  let html = `
+    <div style="margin-bottom:1.25rem;">
+      <div style="font-size:.55rem;letter-spacing:.2em;color:var(--moss);text-transform:uppercase;margin-bottom:.3rem;">ALL 4 WEEKS — OVERVIEW</div>
+      <div style="font-family:'DM Serif Display',serif;font-size:1.6rem;color:var(--linen);line-height:1.1;">Content Summary</div>
+      <div style="font-size:.6rem;color:var(--gray);margin-top:.25rem;">12 posts · Instagram, LinkedIn, Threads · March 9 – April 5, 2026</div>
+    </div>
+    <table class="summary-table">
+      <thead>
+        <tr>
+          <th>Week</th>
+          <th>Monday Post</th>
+          <th>Wednesday Post</th>
+          <th>Friday Post</th>
+        </tr>
+      </thead>
+      <tbody>`;
+
+  WEEKS.forEach(week => {
+    html += `<tr>
+      <td class="week-cell">
+        <span class="week-num">${week.label}</span>
+        <span class="week-th">${week.theme}</span>
+        <span class="week-dr">${week.dates[0]} – ${week.dates[6]}</span>
+      </td>`;
+
+    ['MON','WED','FRI'].forEach(day => {
+      const post = week.posts[day];
+      if (post) {
+        const pc = PILLAR_COLORS[post.pillar];
+        const platc = PLAT_COLORS[post.platform];
+        html += `<td class="hook-cell">
+          <div style="display:flex;align-items:center;gap:.35rem;margin-bottom:.4rem;">
+            <span class="plat-badge" style="background:${platc};color:#fff;font-size:.48rem;font-weight:700;padding:.2rem .45rem;">${post.platform}</span>
+            <span style="font-size:.48rem;font-weight:700;letter-spacing:.1em;color:${pc}">${post.pillar}</span>
+          </div>
+          <span class="hook-text">${post.hook}</span>
+          <span style="font-size:.58rem;color:var(--gray);display:block;margin-top:.2rem;font-style:italic;">${post.cta}</span>
+        </td>`;
+      } else {
+        html += `<td style="color:var(--dark2);">—</td>`;
+      }
+    });
+
+    html += `</tr>`;
+  });
+
+  html += `</tbody></table>`;
+  panel.innerHTML = html;
+}
+
+function switchWeek(idx, btn) {
+  document.querySelectorAll('.week-tab').forEach(t=>t.classList.remove('active'));
+  btn.classList.add('active');
+  document.querySelectorAll('.week-panel').forEach(p=>p.classList.remove('active'));
+  document.getElementById(`week-${idx}`).classList.add('active');
+}
+
+// Build all panels
+WEEKS.forEach((w,i) => buildWeekPanel(w,i));
+buildSummary();
+</script>
+</body>
+</html>

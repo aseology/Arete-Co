@@ -1,0 +1,346 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1.0">
+<title>The Foundation Brief — Arete &amp; Co.</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<style>
+@import url('https://fonts.googleapis.com/css2?family=Bebas+Neue&family=DM+Serif+Display:ital@0;1&family=Space+Mono:ital,wght@0,400;0,700;1,400&display=swap');
+:root{--charcoal:#1A1A1B;--obsidian:#111112;--linen:#F4F1EA;--linen-dim:#b8b4a8;--linen-faint:rgba(244,241,234,0.3);--moss:#7FFF00;--moss-dim:#5acc00;--moss-faint:rgba(127,255,0,0.06);--glass-border:rgba(244,241,234,0.08);--moss-border:rgba(127,255,0,0.2)}
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+html{scroll-behavior:smooth}
+body{background:var(--charcoal);color:var(--linen);font-family:'Space Mono',monospace;overflow-x:hidden;cursor:none}
+body::before{content:'';position:fixed;inset:0;background-image:url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noise'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noise)' opacity='0.03'/%3E%3C/svg%3E");background-size:200px;pointer-events:none;z-index:1000;opacity:.5}
+/* CROSSHAIR CURSOR */
+.cursor{position:fixed;pointer-events:none;z-index:9999;transform:translate(-50%,-50%);width:20px;height:20px}
+.cursor::before,.cursor::after{content:'';position:absolute;background:var(--moss);transition:all .15s}
+.cursor::before{width:1px;height:20px;left:50%;top:0;transform:translateX(-50%)}
+.cursor::after{width:20px;height:1px;top:50%;left:0;transform:translateY(-50%)}
+.cursor-ring{position:fixed;width:6px;height:6px;border:1px solid var(--moss);pointer-events:none;z-index:9998;transform:translate(-50%,-50%);transition:width .2s ease-out,height .2s ease-out,opacity .2s;opacity:.7}
+.cursor.grow::before{height:28px}
+.cursor.grow::after{width:28px}
+.cursor-ring.grow{width:10px;height:10px;opacity:.4}
+nav{position:fixed;top:0;left:0;right:0;z-index:900;display:flex;justify-content:space-between;align-items:center;padding:1rem 2.5rem;transition:background .3s}
+nav.scrolled{background:rgba(17,17,18,.97);backdrop-filter:blur(12px);border-bottom:1px solid var(--glass-border)}
+.nav-logo{font-family:'Bebas Neue',sans-serif;font-size:1rem;letter-spacing:.25em;color:var(--linen);text-decoration:none}
+.nav-logo span{color:var(--moss)}
+.nav-links{display:flex;gap:1rem;list-style:none;align-items:center;flex-wrap:nowrap}
+.nav-links a{font-size:.52rem;letter-spacing:.13em;text-transform:uppercase;color:var(--linen-dim);text-decoration:none;transition:color .2s;position:relative;padding-bottom:2px}
+.nav-links a::after{content:'';position:absolute;bottom:0;left:0;width:0;height:1px;background:var(--moss);transition:width .25s}
+.nav-links a:hover,.nav-links a.active{color:var(--moss)}
+.nav-links a:hover::after,.nav-links a.active::after{width:100%}
+.nav-cta{border:1px solid rgba(127,255,0,.45)!important;color:var(--moss)!important;padding:.38rem 1rem!important;font-size:.52rem!important;letter-spacing:.16em!important;transition:border-color .2s,color .2s!important}
+.nav-cta:hover{border-color:var(--moss)!important;color:var(--linen)!important}
+.nav-cta::after{display:none!important}
+.marquee-wrap{background:var(--moss);overflow:hidden;padding:.7rem 0}
+.marquee-track{display:flex;width:max-content;animation:marquee 26s linear infinite}
+.marquee-item{font-family:'Bebas Neue',sans-serif;font-size:.82rem;letter-spacing:.28em;color:var(--obsidian);padding:0 2rem;white-space:nowrap}
+.marquee-dot{opacity:.35;margin:0 .3rem}
+.eyebrow{font-size:.54rem;letter-spacing:.4em;text-transform:uppercase;color:var(--moss);display:flex;align-items:center;gap:.75rem;margin-bottom:1rem}
+.eyebrow::before{content:'';width:32px;height:1px;background:var(--moss);flex-shrink:0}
+.reveal{opacity:0;transform:translateY(32px);transition:opacity .75s ease,transform .75s ease}
+.reveal.from-left{transform:translateX(-32px)}
+.reveal.from-right{transform:translateX(32px)}
+.reveal.visible{opacity:1;transform:none}
+.d1{transition-delay:.1s}.d2{transition-delay:.2s}.d3{transition-delay:.3s}.d4{transition-delay:.4s}
+.btn-moss{display:inline-flex;align-items:center;gap:1rem;background:var(--moss);color:var(--obsidian);font-family:'Bebas Neue',sans-serif;font-size:.9rem;letter-spacing:.2em;padding:1rem 2rem;text-decoration:none;border:none;cursor:pointer;position:relative;overflow:hidden;transition:color .3s}
+.btn-moss::after{content:'';position:absolute;inset:0;background:var(--obsidian);border:1px solid var(--moss);transform:translateX(-101%);transition:transform .3s ease}
+.btn-moss:hover{color:var(--moss)}
+.btn-moss:hover::after{transform:translateX(0)}
+.btn-moss span{position:relative;z-index:1}
+.btn-ghost{display:inline-flex;align-items:center;gap:.75rem;border:1px solid var(--glass-border);color:var(--linen-dim);font-family:'Bebas Neue',sans-serif;font-size:.82rem;letter-spacing:.18em;padding:.85rem 1.6rem;text-decoration:none;transition:border-color .2s,color .2s}
+.btn-ghost:hover{border-color:var(--moss);color:var(--moss)}
+.tcard{background:var(--obsidian);border:1px solid var(--glass-border);padding:2.5rem;position:relative;overflow:hidden;transition:transform .3s ease,border-color .3s,box-shadow .3s}
+.tcard:hover{transform:translateY(-5px);border-color:var(--moss-border);box-shadow:0 16px 48px rgba(127,255,0,.07)}
+.tcard::after{content:'';position:absolute;bottom:0;left:0;right:0;height:2px;background:var(--moss);transform:scaleX(0);transform-origin:left;transition:transform .4s ease}
+.tcard:hover::after{transform:scaleX(1)}
+footer{padding:2.5rem 3.5rem;background:var(--obsidian);border-top:1px solid var(--glass-border);display:grid;grid-template-columns:1fr auto 1fr;align-items:center;gap:2rem}
+.footer-logo{font-family:'Bebas Neue',sans-serif;font-size:.95rem;letter-spacing:.25em}
+.footer-logo span{color:var(--moss)}
+.footer-motto{font-family:'DM Serif Display',serif;font-style:italic;font-size:.75rem;color:var(--linen-dim);text-align:center}
+.footer-links{display:flex;gap:1.75rem;justify-content:flex-end;flex-wrap:wrap}
+.footer-links a{font-size:.56rem;letter-spacing:.18em;text-transform:uppercase;color:var(--linen-dim);text-decoration:none;transition:color .2s}
+.footer-links a:hover{color:var(--moss)}
+@keyframes marquee{from{transform:translateX(0)}to{transform:translateX(-50%)}}
+@keyframes fadeUp{from{opacity:0;transform:translateY(20px)}to{opacity:1;transform:none}}
+@keyframes fadeIn{from{opacity:0}to{opacity:1}}
+@keyframes pulse{0%,100%{opacity:.4}50%{opacity:1}}
+@media(max-width:900px){nav{padding:1.2rem 1.5rem}.nav-links li:not(:last-child):not(:nth-last-child(2)):not(:nth-last-child(3)){display:none}footer{grid-template-columns:1fr;text-align:center;padding:2rem 1.5rem}.footer-links{justify-content:center}}
+
+/* ── BRIEF ── */
+.brief-hero{background:var(--obsidian);padding:12rem 3.5rem 5rem;border-bottom:1px solid var(--glass-border);position:relative;overflow:hidden}
+.brief-hero::after{content:'01';font-family:'Bebas Neue',sans-serif;font-size:28vw;color:rgba(127,255,0,.03);position:absolute;right:-.02em;bottom:-.1em;line-height:1;pointer-events:none}
+.brief-hero-inner{display:grid;grid-template-columns:1fr 1fr;gap:4rem;align-items:end;position:relative;z-index:1}
+.brief-hero-title{font-family:'Bebas Neue',sans-serif;font-size:clamp(3.5rem,7vw,8rem);line-height:.86;opacity:0;animation:fadeUp .9s .3s forwards}
+.brief-hero-right{opacity:0;animation:fadeUp .9s .5s forwards}
+.brief-hero-sub{font-family:'DM Serif Display',serif;font-style:italic;font-size:1.05rem;color:var(--linen-dim);line-height:1.7;margin-bottom:1.5rem}
+.step-bar{display:flex;gap:.5rem;align-items:center}
+.step-pip{width:24px;height:2px;background:var(--glass-border);transition:background .3s}
+.step-pip.active{background:var(--moss)}
+.step-label{font-size:.56rem;letter-spacing:.25em;text-transform:uppercase;color:var(--linen-dim)}
+/* FORM LAYOUT */
+.brief-body{padding:5rem 3.5rem;background:var(--charcoal);position:relative}
+.brief-body::before{content:'';position:absolute;inset:0;background:repeating-linear-gradient(0deg,transparent,transparent 39px,rgba(244,241,234,.02) 39px,rgba(244,241,234,.02) 40px);pointer-events:none}
+.brief-layout{display:grid;grid-template-columns:260px 1fr;gap:5rem;position:relative;z-index:1}
+.brief-sidebar{position:sticky;top:8rem;height:fit-content}
+.brief-sidebar-head{font-family:'Bebas Neue',sans-serif;font-size:2rem;line-height:.9;margin-bottom:1rem;letter-spacing:.03em}
+.brief-sidebar-sub{font-family:'DM Serif Display',serif;font-style:italic;font-size:.85rem;color:var(--linen-dim);line-height:1.7;margin-bottom:2rem}
+.progress-nav{display:flex;flex-direction:column;gap:.35rem;margin-bottom:2rem}
+.pn-item{display:flex;align-items:center;gap:.65rem;font-size:.58rem;letter-spacing:.15em;text-transform:uppercase;color:var(--linen-faint);padding:.5rem 0;border-bottom:1px solid transparent;transition:color .2s,border-color .2s;cursor:pointer}
+.pn-item.active{color:var(--moss);border-color:var(--glass-border)}
+.pn-item.done{color:var(--linen-dim)}
+.pn-dot{width:5px;height:5px;border-radius:50%;border:1px solid currentColor;flex-shrink:0;transition:background .2s}
+.pn-item.active .pn-dot,.pn-item.done .pn-dot{background:currentColor}
+.sidebar-note{background:var(--obsidian);border-left:2px solid var(--moss);padding:1.1rem 1.25rem;font-size:.65rem;line-height:1.75;color:var(--linen-dim)}
+/* FIELDS */
+.brief-section-block{margin-bottom:3.5rem}
+.section-header{display:flex;align-items:center;gap:1rem;margin-bottom:2rem;padding-bottom:.75rem;border-bottom:1px solid var(--glass-border)}
+.section-snum{font-family:'Bebas Neue',sans-serif;font-size:.6rem;letter-spacing:.35em;color:var(--moss)}
+.section-sname{font-family:'Bebas Neue',sans-serif;font-size:1.1rem;letter-spacing:.07em}
+.fields-stack{display:flex;flex-direction:column;gap:1px;background:var(--glass-border);border:1px solid var(--glass-border)}
+.bfield{background:var(--obsidian);padding:1.75rem 2rem;position:relative;transition:background .25s}
+.bfield:focus-within{background:rgba(127,255,0,.03)}
+.bfield:focus-within .fnum{color:var(--moss)}
+.fnum{font-family:'Bebas Neue',sans-serif;font-size:.6rem;letter-spacing:.3em;color:rgba(127,255,0,.3);margin-bottom:.5rem;transition:color .2s}
+.flabel{font-size:.68rem;line-height:1.7;color:var(--linen-dim);margin-bottom:.85rem;display:block}
+.flabel strong{color:var(--linen);display:block;font-size:.72rem;letter-spacing:.04em;margin-bottom:.25rem}
+.btextarea{width:100%;background:transparent;border:none;border-bottom:1px solid var(--glass-border);color:var(--linen);font-family:'Space Mono',monospace;font-size:.7rem;line-height:1.8;padding:.5rem 0 .6rem;resize:none;min-height:70px;outline:none;transition:border-color .2s;caret-color:var(--moss)}
+.btextarea:focus{border-color:var(--moss)}
+.btextarea::placeholder{color:rgba(184,180,168,.28);font-style:italic}
+.binput{width:100%;background:transparent;border:none;border-bottom:1px solid var(--glass-border);color:var(--linen);font-family:'Space Mono',monospace;font-size:.7rem;padding:.5rem 0 .6rem;outline:none;transition:border-color .2s;caret-color:var(--moss)}
+.binput:focus{border-color:var(--moss)}
+.binput::placeholder{color:rgba(184,180,168,.28);font-style:italic}
+.binput[type="date"]::-webkit-calendar-picker-indicator{filter:invert(.5) sepia(1) saturate(8) hue-rotate(55deg);cursor:pointer}
+.date-or{font-size:.55rem;letter-spacing:.2em;text-transform:uppercase;color:var(--linen-faint);margin:.4rem 0}
+/* CLOSING */
+.brief-closing{background:var(--obsidian);border:1px solid var(--glass-border);border-top:2px solid var(--moss);padding:3rem;margin-top:.5rem}
+.closing-quote{font-family:'DM Serif Display',serif;font-style:italic;font-size:.95rem;line-height:1.7;color:var(--linen-dim);padding-left:1.5rem;border-left:2px solid var(--moss);margin-bottom:2rem}
+.closing-quote span{color:var(--linen)}
+.closing-row{display:flex;align-items:center;gap:2rem;flex-wrap:wrap}
+.closing-note{font-size:.6rem;color:var(--linen-faint);line-height:1.65}
+/* SUCCESS */
+.brief-success{display:none;padding:8rem 3.5rem;text-align:center}
+.brief-success.visible{display:block}
+.success-check{font-family:'Bebas Neue',sans-serif;font-size:8rem;color:var(--moss);line-height:1;margin-bottom:0}
+.success-title{font-family:'Bebas Neue',sans-serif;font-size:clamp(3rem,6vw,6rem);line-height:.9;margin-bottom:1.5rem}
+.success-body{font-family:'DM Serif Display',serif;font-style:italic;font-size:1.05rem;color:var(--linen-dim);max-width:480px;margin:0 auto 3rem;line-height:1.7}
+.success-actions{display:flex;gap:1rem;justify-content:center;flex-wrap:wrap}
+@media(max-width:900px){
+  .brief-hero{padding:10rem 1.5rem 3.5rem}.brief-hero-inner{grid-template-columns:1fr;gap:2rem}
+  .brief-body{padding:3.5rem 1.5rem}.brief-layout{grid-template-columns:1fr;gap:3rem}
+  .brief-sidebar{position:static}.progress-nav{display:none}
+  .brief-closing{padding:2rem}.brief-success{padding:5rem 1.5rem}
+}
+</style>
+</head>
+<body>
+<div class="cursor" id="cursor"></div>
+<div class="cursor-ring" id="cursorRing"></div>
+<nav>
+  <a href="index.html" class="nav-logo">ARETE<span>&amp;</span>CO.</a>
+  <ul class="nav-links">
+    <li><a href="philosophy.html">Philosophy</a></li>
+    <li><a href="services.html">Services</a></li>
+    <li><a href="process.html">Process</a></li>
+    <li><a href="pricing.html">Pricing</a></li>
+    <li><a href="brief.html" class="active">Brief</a></li>
+    <li><a href="contact.html">Contact</a></li>
+    <li><a href="https://ac-portfolio-snowy.vercel.app" target="_blank" rel="noopener">Portfolio ↗</a></li>
+    <li><a href="brief.html" class="nav-cta">Consultation</a></li>
+  </ul>
+</nav>
+<section class="brief-hero">
+  <div class="brief-hero-inner">
+    <div>
+      <p class="eyebrow">Phase 01 — Consultation</p>
+      <h1 class="brief-hero-title">The Foundation<br>Brief.</h1>
+    </div>
+    <div class="brief-hero-right">
+      <p class="brief-hero-sub">Eight questions. Complete honesty. No pitch required — just the raw materials of your vision.</p>
+      <div class="step-bar">
+        <div class="step-pip active" id="sp1"></div>
+        <div class="step-pip" id="sp2"></div>
+        <div class="step-pip" id="sp3"></div>
+        <span class="step-label">3 Sections · 8 Questions</span>
+      </div>
+    </div>
+  </div>
+</section>
+<div class="brief-body">
+  <div id="briefForm">
+    <div class="brief-layout">
+      <aside class="brief-sidebar reveal">
+        <h2 class="brief-sidebar-head">Survey<br>The Land.</h2>
+        <p class="brief-sidebar-sub">Define intent before a single material is purchased.</p>
+        <div class="progress-nav">
+          <div class="pn-item active" data-s="1"><div class="pn-dot"></div>Soul & Stakeholders</div>
+          <div class="pn-item" data-s="2"><div class="pn-dot"></div>Architecture & Impact</div>
+          <div class="pn-item" data-s="3"><div class="pn-dot"></div>Blueprint & Resources</div>
+        </div>
+        <div class="sidebar-note">After submission, I'll review the materials and respond within 48 hours with an honest read on the path forward.</div>
+      </aside>
+      <div>
+        <div class="brief-section-block reveal" id="s1">
+          <div class="section-header"><span class="section-snum">01</span><span class="section-sname">The Soul & The Stakeholders</span></div>
+          <div class="fields-stack">
+            <div class="bfield">
+              <div class="fnum">Q01</div>
+              <label class="flabel"><strong>Who is at the table?</strong>Primary stakeholders — whose hands are on the wheel?</label>
+              <textarea class="btextarea" rows="3" placeholder="Names, roles, decision-makers..."></textarea>
+            </div>
+            <div class="bfield">
+              <div class="fnum">Q02</div>
+              <label class="flabel"><strong>What is the "why" behind the "what"?</strong>If this project were a room, what feeling should people have when they walk in?</label>
+              <textarea class="btextarea" rows="3" placeholder="The mission, the feeling, the deeper purpose..."></textarea>
+            </div>
+            <div class="bfield">
+              <div class="fnum">Q03</div>
+              <label class="flabel"><strong>Who are we building this for?</strong>Specific clients or customers — their goals, their problems.</label>
+              <textarea class="btextarea" rows="3" placeholder="Describe your audience honestly..."></textarea>
+            </div>
+          </div>
+        </div>
+        <div class="brief-section-block reveal" id="s2">
+          <div class="section-header"><span class="section-snum">02</span><span class="section-sname">The Architecture & The Impact</span></div>
+          <div class="fields-stack">
+            <div class="bfield">
+              <div class="fnum">Q04</div>
+              <label class="flabel"><strong>What are we fixing?</strong>The rustic notes that need a modern update.</label>
+              <textarea class="btextarea" rows="3" placeholder="The problem, the friction, the gap..."></textarea>
+            </div>
+            <div class="bfield">
+              <div class="fnum">Q05</div>
+              <label class="flabel"><strong>How do we define "Done"?</strong>Hard numbers or tangible results — not vibes.</label>
+              <textarea class="btextarea" rows="3" placeholder="KPIs, milestones, measurable outcomes..."></textarea>
+            </div>
+            <div class="bfield">
+              <div class="fnum">Q06</div>
+              <label class="flabel"><strong>What is the return on the build?</strong>Investment in. Non-negotiable benefits out.</label>
+              <textarea class="btextarea" rows="3" placeholder="Budget range, expected ROI, must-have returns..."></textarea>
+            </div>
+          </div>
+        </div>
+        <div class="brief-section-block reveal" id="s3">
+          <div class="section-header"><span class="section-snum">03</span><span class="section-sname">The Blueprint & Resources</span></div>
+          <div class="fields-stack">
+            <div class="bfield">
+              <div class="fnum">Q07</div>
+              <label class="flabel"><strong>What's in the toolbox?</strong>What you already have — and what's missing.</label>
+              <textarea class="btextarea" rows="3" placeholder="Existing assets, skills, tools, gaps..."></textarea>
+            </div>
+            <div class="bfield">
+              <div class="fnum">Q08</div>
+              <label class="flabel"><strong>When is the Open House?</strong>Hard deadline or target window.</label>
+              <input type="date" class="binput" style="margin-bottom:.4rem">
+              <p class="date-or">— or —</p>
+              <textarea class="btextarea" rows="2" placeholder="e.g. 'Q3 this year', 'before our October event'..."></textarea>
+            </div>
+          </div>
+        </div>
+        <div class="brief-closing">
+          <blockquote class="closing-quote"><span>"I'll take these materials and start drafting the framework.</span> Expect a response that values your time as much as your vision."</blockquote>
+          <div class="closing-row">
+            <button class="btn-moss" onclick="submitBrief()"><span>Submit The Brief</span><span>→</span></button>
+            <p class="closing-note">Reviewed personally.<br>Response within 48 hours.</p>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+  <div class="brief-success" id="briefSuccess">
+    <div class="success-check">✓</div>
+    <h2 class="success-title">Brief Received.</h2>
+    <p class="success-body">The foundation has been surveyed. I'll review the raw materials and respond within 48 hours with an honest read on the path forward.</p>
+    <div class="success-actions">
+      <a href="process.html" class="btn-moss"><span>See What Happens Next</span><span>→</span></a>
+      <a href="index.html" class="btn-ghost">Return Home</a>
+    </div>
+  </div>
+</div>
+<footer>
+  <div class="footer-logo">ARETE<span>&amp;</span>CO.</div>
+  <div class="footer-motto">Build with intention. Execute with precision.</div>
+  <div class="footer-links">
+    <a href="philosophy.html">Philosophy</a>
+    <a href="services.html">Services</a>
+    <a href="process.html">Process</a>
+    <a href="pricing.html">Pricing</a>
+    <a href="brief.html" class="active">Brief</a>
+    <a href="contact.html">Contact</a>
+    <a href="https://ac-portfolio-snowy.vercel.app" target="_blank" rel="noopener">Portfolio ↗</a>
+  </div>
+</footer>
+<script>// CROSSHAIR CURSOR
+(function(){
+  const c=document.getElementById('cursor'),r=document.getElementById('cursorRing');
+  if(!c||!r)return;
+  let mx=0,my=0;
+  document.addEventListener('mousemove',e=>{
+    mx=e.clientX;my=e.clientY;
+    c.style.left=mx+'px';c.style.top=my+'px';
+    r.style.left=mx+'px';r.style.top=my+'px';
+  });
+  document.querySelectorAll('a,button,.tcard,textarea,input,select,.pill').forEach(el=>{
+    el.addEventListener('mouseenter',()=>{c.classList.add('grow');r.classList.add('grow')});
+    el.addEventListener('mouseleave',()=>{c.classList.remove('grow');r.classList.remove('grow')});
+  });
+})();
+// NAV SCROLL
+(function(){const n=document.querySelector('nav');if(!n)return;window.addEventListener('scroll',()=>n.classList.toggle('scrolled',scrollY>50))})();
+// REVEAL
+(function(){
+  document.querySelectorAll('.reveal').forEach(el=>{
+    new IntersectionObserver(([e])=>{if(e.isIntersecting)el.classList.add('visible')},{threshold:.1}).observe(el);
+  });
+})();
+// ACTIVE NAV
+(function(){const p=location.pathname.split('/').pop()||'index.html';document.querySelectorAll('.nav-links a').forEach(a=>{if(a.getAttribute('href')===p)a.classList.add('active')})})();
+// COUNTER ANIMATION
+document.querySelectorAll('.counter').forEach(el=>{
+  new IntersectionObserver(([e])=>{
+    if(e.isIntersecting&&!el._done){
+      el._done=true;
+      const target=parseFloat(el.dataset.target),suffix=el.dataset.suffix||'',prefix=el.dataset.prefix||'',isFloat=String(target).includes('.');
+      let start=null;const dur=1400;
+      (function step(ts){if(!start)start=ts;const p=Math.min((ts-start)/dur,1),ease=1-Math.pow(1-p,3),val=isFloat?(target*ease).toFixed(1):Math.round(target*ease);el.textContent=prefix+val+suffix;if(p<1)requestAnimationFrame(step)})(performance.now());
+    }
+  },{threshold:.5}).observe(el);
+});
+
+// SECTION SCROLL PROGRESS
+const secs=['s1','s2','s3'];
+const pnItems=document.querySelectorAll('.pn-item');
+const stepPips=document.querySelectorAll('.step-pip');
+secs.forEach((id,i)=>{
+  const el=document.getElementById(id);
+  if(!el)return;
+  new IntersectionObserver(([e])=>{
+    if(e.isIntersecting){
+      pnItems.forEach((p,j)=>{p.classList.toggle('active',j===i);p.classList.toggle('done',j<i)});
+      stepPips.forEach((p,j)=>{p.classList.toggle('active',j<=i)});
+    }
+  },{rootMargin:'-30% 0px -50% 0px'}).observe(el);
+});
+function submitBrief(){
+  const tas=document.querySelectorAll('.btextarea');
+  let filled=0;
+  tas.forEach(t=>{if(t.value.trim())filled++});
+  if(filled<4){
+    tas.forEach(t=>{if(!t.value.trim()){t.style.borderColor='rgba(127,255,0,.5)';setTimeout(()=>t.style.borderColor='',2000)}});
+    for(const t of tas){if(!t.value.trim()){t.scrollIntoView({behavior:'smooth',block:'center'});t.focus();break}}
+    return;
+  }
+  const f=document.getElementById('briefForm');
+  f.style.transition='opacity .5s';f.style.opacity='0';
+  setTimeout(()=>{
+    f.style.display='none';
+    const s=document.getElementById('briefSuccess');
+    s.classList.add('visible');s.style.opacity='0';s.style.transition='opacity .6s';
+    window.scrollTo({top:s.offsetTop-100,behavior:'smooth'});
+    requestAnimationFrame(()=>s.style.opacity='1');
+  },500);
+}
+</script>
+</body>
+</html>

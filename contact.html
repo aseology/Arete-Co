@@ -1,0 +1,351 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1.0">
+<title>Contact — The Structured Creative</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<style>
+@import url('https://fonts.googleapis.com/css2?family=Bebas+Neue&family=DM+Serif+Display:ital@0;1&family=Space+Mono:ital,wght@0,400;0,700;1,400&display=swap');
+:root{--charcoal:#1A1A1B;--obsidian:#111112;--linen:#F4F1EA;--linen-dim:#b8b4a8;--linen-faint:rgba(244,241,234,0.3);--moss:#7FFF00;--moss-dim:#5acc00;--moss-faint:rgba(127,255,0,0.06);--glass-border:rgba(244,241,234,0.08);--moss-border:rgba(127,255,0,0.2)}
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+html{scroll-behavior:smooth}
+body{background:var(--charcoal);color:var(--linen);font-family:'Space Mono',monospace;overflow-x:hidden;cursor:none}
+body::before{content:'';position:fixed;inset:0;background-image:url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noise'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noise)' opacity='0.03'/%3E%3C/svg%3E");background-size:200px;pointer-events:none;z-index:1000;opacity:.5}
+/* CROSSHAIR CURSOR */
+.cursor{position:fixed;pointer-events:none;z-index:9999;transform:translate(-50%,-50%);width:20px;height:20px}
+.cursor::before,.cursor::after{content:'';position:absolute;background:var(--moss);transition:all .15s}
+.cursor::before{width:1px;height:20px;left:50%;top:0;transform:translateX(-50%)}
+.cursor::after{width:20px;height:1px;top:50%;left:0;transform:translateY(-50%)}
+.cursor-ring{position:fixed;width:6px;height:6px;border:1px solid var(--moss);pointer-events:none;z-index:9998;transform:translate(-50%,-50%);transition:width .2s ease-out,height .2s ease-out,opacity .2s;opacity:.7}
+.cursor.grow::before{height:28px}
+.cursor.grow::after{width:28px}
+.cursor-ring.grow{width:10px;height:10px;opacity:.4}
+nav{position:fixed;top:0;left:0;right:0;z-index:900;display:flex;justify-content:space-between;align-items:center;padding:1rem 2.5rem;transition:background .3s}
+nav.scrolled{background:rgba(17,17,18,.97);backdrop-filter:blur(12px);border-bottom:1px solid var(--glass-border)}
+.nav-logo{font-family:'Bebas Neue',sans-serif;font-size:1rem;letter-spacing:.25em;color:var(--linen);text-decoration:none}
+.nav-logo span{color:var(--moss)}
+.nav-links{display:flex;gap:1rem;list-style:none;align-items:center;flex-wrap:nowrap}
+.nav-links a{font-size:.52rem;letter-spacing:.13em;text-transform:uppercase;color:var(--linen-dim);text-decoration:none;transition:color .2s;position:relative;padding-bottom:2px}
+.nav-links a::after{content:'';position:absolute;bottom:0;left:0;width:0;height:1px;background:var(--moss);transition:width .25s}
+.nav-links a:hover,.nav-links a.active{color:var(--moss)}
+.nav-links a:hover::after,.nav-links a.active::after{width:100%}
+.nav-cta{border:1px solid rgba(127,255,0,.45)!important;color:var(--moss)!important;padding:.38rem 1rem!important;font-size:.52rem!important;letter-spacing:.16em!important;transition:border-color .2s,color .2s!important}
+.nav-cta:hover{border-color:var(--moss)!important;color:var(--linen)!important}
+.nav-cta::after{display:none!important}
+.marquee-wrap{background:var(--moss);overflow:hidden;padding:.7rem 0}
+.marquee-track{display:flex;width:max-content;animation:marquee 26s linear infinite}
+.marquee-item{font-family:'Bebas Neue',sans-serif;font-size:.82rem;letter-spacing:.28em;color:var(--obsidian);padding:0 2rem;white-space:nowrap}
+.marquee-dot{opacity:.35;margin:0 .3rem}
+.eyebrow{font-size:.54rem;letter-spacing:.4em;text-transform:uppercase;color:var(--moss);display:flex;align-items:center;gap:.75rem;margin-bottom:1rem}
+.eyebrow::before{content:'';width:32px;height:1px;background:var(--moss);flex-shrink:0}
+.reveal{opacity:0;transform:translateY(32px);transition:opacity .75s ease,transform .75s ease}
+.reveal.from-left{transform:translateX(-32px)}
+.reveal.from-right{transform:translateX(32px)}
+.reveal.visible{opacity:1;transform:none}
+.d1{transition-delay:.1s}.d2{transition-delay:.2s}.d3{transition-delay:.3s}.d4{transition-delay:.4s}
+.btn-moss{display:inline-flex;align-items:center;gap:1rem;background:var(--moss);color:var(--obsidian);font-family:'Bebas Neue',sans-serif;font-size:.9rem;letter-spacing:.2em;padding:1rem 2rem;text-decoration:none;border:none;cursor:pointer;position:relative;overflow:hidden;transition:color .3s}
+.btn-moss::after{content:'';position:absolute;inset:0;background:var(--obsidian);border:1px solid var(--moss);transform:translateX(-101%);transition:transform .3s ease}
+.btn-moss:hover{color:var(--moss)}
+.btn-moss:hover::after{transform:translateX(0)}
+.btn-moss span{position:relative;z-index:1}
+.btn-ghost{display:inline-flex;align-items:center;gap:.75rem;border:1px solid var(--glass-border);color:var(--linen-dim);font-family:'Bebas Neue',sans-serif;font-size:.82rem;letter-spacing:.18em;padding:.85rem 1.6rem;text-decoration:none;transition:border-color .2s,color .2s}
+.btn-ghost:hover{border-color:var(--moss);color:var(--moss)}
+.tcard{background:var(--obsidian);border:1px solid var(--glass-border);padding:2.5rem;position:relative;overflow:hidden;transition:transform .3s ease,border-color .3s,box-shadow .3s}
+.tcard:hover{transform:translateY(-5px);border-color:var(--moss-border);box-shadow:0 16px 48px rgba(127,255,0,.07)}
+.tcard::after{content:'';position:absolute;bottom:0;left:0;right:0;height:2px;background:var(--moss);transform:scaleX(0);transform-origin:left;transition:transform .4s ease}
+.tcard:hover::after{transform:scaleX(1)}
+footer{padding:2.5rem 3.5rem;background:var(--obsidian);border-top:1px solid var(--glass-border);display:grid;grid-template-columns:1fr auto 1fr;align-items:center;gap:2rem}
+.footer-logo{font-family:'Bebas Neue',sans-serif;font-size:.95rem;letter-spacing:.25em}
+.footer-logo span{color:var(--moss)}
+.footer-motto{font-family:'DM Serif Display',serif;font-style:italic;font-size:.75rem;color:var(--linen-dim);text-align:center}
+.footer-links{display:flex;gap:1.75rem;justify-content:flex-end;flex-wrap:wrap}
+.footer-links a{font-size:.56rem;letter-spacing:.18em;text-transform:uppercase;color:var(--linen-dim);text-decoration:none;transition:color .2s}
+.footer-links a:hover{color:var(--moss)}
+@keyframes marquee{from{transform:translateX(0)}to{transform:translateX(-50%)}}
+@keyframes fadeUp{from{opacity:0;transform:translateY(20px)}to{opacity:1;transform:none}}
+@keyframes fadeIn{from{opacity:0}to{opacity:1}}
+@keyframes pulse{0%,100%{opacity:.4}50%{opacity:1}}
+@media(max-width:900px){nav{padding:1.2rem 1.5rem}.nav-links li:not(:last-child):not(:nth-last-child(2)):not(:nth-last-child(3)){display:none}footer{grid-template-columns:1fr;text-align:center;padding:2rem 1.5rem}.footer-links{justify-content:center}}
+
+/* ── CONTACT — Editorial Split inspired by Payrot/Mutmiz floating card layout ── */
+.contact-page{min-height:100vh;background:var(--obsidian)}
+/* TOP BAND */
+.contact-top{padding:10rem 3.5rem 0;background:var(--charcoal);border-bottom:1px solid var(--glass-border)}
+.contact-top-inner{display:grid;grid-template-columns:1fr 1fr;gap:0;align-items:end}
+.ct-left{padding-bottom:4rem}
+.ct-eyebrow{font-size:.58rem;letter-spacing:.38em;text-transform:uppercase;color:var(--moss);display:flex;align-items:center;gap:.75rem;margin-bottom:1.5rem;opacity:0;animation:fadeUp .8s .3s forwards}
+.ct-eyebrow::before{content:'';width:32px;height:1px;background:var(--moss)}
+.ct-title{font-family:'Bebas Neue',sans-serif;font-size:clamp(3.5rem,7vw,8.5rem);line-height:.86;margin-bottom:1.5rem;opacity:0;animation:fadeUp .9s .5s forwards}
+.ct-sub{font-family:'DM Serif Display',serif;font-style:italic;font-size:1.05rem;color:var(--linen-dim);line-height:1.7;max-width:400px;opacity:0;animation:fadeUp .9s .7s forwards}
+/* AVAILABLE badge */
+.avail-badge{display:inline-flex;align-items:center;gap:.65rem;background:rgba(127,255,0,.07);border:1px solid var(--moss-border);padding:.65rem 1.1rem;margin-top:1.75rem;opacity:0;animation:fadeUp .9s .9s forwards}
+.avail-dot{width:7px;height:7px;border-radius:50%;background:var(--moss);animation:pulse 2.2s ease-in-out infinite;flex-shrink:0}
+.avail-text{font-size:.56rem;letter-spacing:.28em;text-transform:uppercase;color:var(--moss)}
+/* RIGHT — floating info cards over dark panel */
+.ct-right{background:var(--charcoal);padding:5rem 3.5rem 4rem;border-left:1px solid var(--glass-border);position:relative;overflow:hidden;min-height:400px}
+.ct-right-bg{display:none}
+/* FLOATING CHANNEL CARDS — Payrot-inspired floating UI elements */
+.float-cards{position:relative;z-index:2;display:flex;flex-direction:column;gap:1rem;padding-top:2rem}
+.float-card{background:rgba(17,17,18,.9);border:1px solid var(--glass-border);padding:1.1rem 1.4rem;backdrop-filter:blur(12px);display:flex;align-items:center;gap:1.25rem;text-decoration:none;color:inherit;transition:border-color .25s,transform .25s,box-shadow .25s;position:relative;overflow:hidden}
+.float-card:nth-child(2){margin-left:1.5rem}
+.float-card:nth-child(3){margin-left:3rem}
+.float-card:nth-child(4){margin-left:1rem}
+.float-card::before{content:'';position:absolute;left:0;top:0;bottom:0;width:2px;background:var(--moss);transform:scaleY(0);transition:transform .3s;transform-origin:bottom}
+.float-card:hover{border-color:var(--moss-border);transform:translateX(4px);box-shadow:0 8px 32px rgba(127,255,0,.06)}
+.float-card:hover::before{transform:scaleY(1)}
+.fc-icon{width:36px;height:36px;border:1px solid var(--glass-border);display:flex;align-items:center;justify-content:center;flex-shrink:0;font-size:.75rem;color:var(--moss);background:rgba(127,255,0,.05);transition:background .25s}
+.float-card:hover .fc-icon{background:rgba(127,255,0,.1)}
+.fc-meta{}
+.fc-label{font-size:.5rem;letter-spacing:.3em;text-transform:uppercase;color:var(--linen-dim);margin-bottom:.2rem}
+.fc-value{font-family:'DM Serif Display',serif;font-size:.9rem;color:var(--linen)}
+.fc-arrow{margin-left:auto;color:rgba(127,255,0,.3);font-size:.8rem;transition:color .2s,transform .2s}
+.float-card:hover .fc-arrow{color:var(--moss);transform:translateX(3px)}
+/* MAIN CONTENT AREA — 3 column below */
+.contact-body{display:grid;grid-template-columns:1fr 1.6fr 1fr;gap:1px;background:var(--glass-border);border-top:1px solid var(--glass-border)}
+/* LEFT PANEL — credentials */
+.cb-left{background:var(--charcoal);padding:4rem 3rem}
+.cred-list{display:flex;flex-direction:column;gap:2rem;margin-top:2rem}
+.cred-item{padding-bottom:2rem;border-bottom:1px solid var(--glass-border)}
+.cred-item:last-child{border-bottom:none;padding-bottom:0}
+.ci-org{font-size:.52rem;letter-spacing:.3em;text-transform:uppercase;color:var(--moss);margin-bottom:.35rem}
+.ci-role{font-family:'Bebas Neue',sans-serif;font-size:1.1rem;letter-spacing:.04em;line-height:1.1;margin-bottom:.2rem}
+.ci-date{font-size:.58rem;color:var(--linen-dim)}
+/* CENTER PANEL — form */
+.cb-center{background:var(--obsidian);padding:4rem 3.5rem}
+.form-title{font-family:'Bebas Neue',sans-serif;font-size:2rem;letter-spacing:.04em;margin-bottom:.35rem;opacity:0;animation:fadeUp .9s .4s forwards}
+.form-sub{font-family:'DM Serif Display',serif;font-style:italic;font-size:.88rem;color:var(--linen-dim);margin-bottom:2.5rem;line-height:1.6;opacity:0;animation:fadeUp .9s .6s forwards}
+.form-fields{display:flex;flex-direction:column;gap:1px;background:var(--glass-border);border:1px solid var(--glass-border);opacity:0;animation:fadeUp .9s .7s forwards}
+.field-row{display:grid;grid-template-columns:1fr 1fr;gap:1px;background:var(--glass-border)}
+.ffield{background:var(--obsidian);padding:1.3rem 1.4rem;transition:background .2s}
+.ffield:focus-within{background:rgba(127,255,0,.025)}
+.ff-label{display:block;font-size:.52rem;letter-spacing:.28em;text-transform:uppercase;color:var(--moss);margin-bottom:.5rem}
+.ff-input{width:100%;background:transparent;border:none;border-bottom:1px solid var(--glass-border);color:var(--linen);font-family:'Space Mono',monospace;font-size:.7rem;padding:.4rem 0 .5rem;outline:none;caret-color:var(--moss);transition:border-color .2s}
+.ff-input:focus{border-color:var(--moss)}
+.ff-input::placeholder{color:rgba(184,180,168,.25);font-style:italic}
+.ff-textarea{width:100%;background:transparent;border:none;border-bottom:1px solid var(--glass-border);color:var(--linen);font-family:'Space Mono',monospace;font-size:.7rem;padding:.4rem 0 .5rem;outline:none;resize:none;min-height:90px;line-height:1.8;caret-color:var(--moss);transition:border-color .2s}
+.ff-textarea:focus{border-color:var(--moss)}
+.ff-textarea::placeholder{color:rgba(184,180,168,.25);font-style:italic}
+.form-footer{display:flex;align-items:center;gap:1.75rem;margin-top:1.5rem;flex-wrap:wrap;opacity:0;animation:fadeUp .9s .9s forwards}
+.form-note{font-size:.58rem;color:var(--linen-faint);line-height:1.65}
+/* RIGHT PANEL — brief nudge + quick stats */
+.cb-right{background:var(--charcoal);padding:4rem 3rem;display:flex;flex-direction:column;gap:3rem}
+.brief-nudge{background:var(--obsidian);border:1px solid var(--glass-border);border-top:2px solid var(--moss);padding:2rem}
+.bn-num{font-family:'Bebas Neue',sans-serif;font-size:3rem;color:rgba(127,255,0,.08);line-height:1;margin-bottom:-.5rem}
+.bn-title{font-family:'Bebas Neue',sans-serif;font-size:1.2rem;letter-spacing:.04em;margin-bottom:.6rem}
+.bn-body{font-size:.64rem;line-height:1.8;color:var(--linen-dim);margin-bottom:1.25rem}
+.quick-stats{display:flex;flex-direction:column;gap:1px;background:var(--glass-border);border:1px solid var(--glass-border)}
+.qs-row{background:var(--obsidian);padding:1rem 1.25rem}
+.qs-label{font-size:.5rem;letter-spacing:.28em;text-transform:uppercase;color:var(--linen-dim);margin-bottom:.25rem}
+.qs-val{font-family:'Bebas Neue',sans-serif;font-size:1.1rem;letter-spacing:.04em;color:var(--linen)}
+.qs-val span{color:var(--moss)}
+/* SUCCESS */
+.contact-success{display:none;padding:6rem 3.5rem;text-align:center;background:var(--obsidian)}
+.contact-success.visible{display:block}
+.cs-icon{font-family:'Bebas Neue',sans-serif;font-size:5rem;color:var(--moss);line-height:1}
+.cs-title{font-family:'Bebas Neue',sans-serif;font-size:clamp(2.5rem,5vw,5rem);line-height:.9;margin-bottom:1.5rem}
+.cs-body{font-family:'DM Serif Display',serif;font-style:italic;font-size:1rem;color:var(--linen-dim);max-width:460px;margin:0 auto 2.5rem;line-height:1.7}
+@media(max-width:1100px){.contact-body{grid-template-columns:1fr 1.4fr}.cb-right{display:none}}
+@media(max-width:900px){
+  .contact-top{padding:10rem 1.5rem 0}.contact-top-inner{grid-template-columns:1fr}
+  .ct-right{border-left:none;border-top:1px solid var(--glass-border);padding:3.5rem 1.5rem}
+  .float-card:nth-child(2),.float-card:nth-child(3),.float-card:nth-child(4){margin-left:0}
+  .contact-body{grid-template-columns:1fr}
+  .cb-left{padding:3rem 1.5rem}.cb-center{padding:3rem 1.5rem}
+}
+</style>
+</head>
+<body>
+<div class="cursor" id="cursor"></div>
+<div class="cursor-ring" id="cursorRing"></div>
+<nav>
+  <a href="index.html" class="nav-logo">ARETE<span>&amp;</span>CO.</a>
+  <ul class="nav-links">
+    <li><a href="philosophy.html">Philosophy</a></li>
+    <li><a href="services.html">Services</a></li>
+    <li><a href="process.html">Process</a></li>
+    <li><a href="pricing.html">Pricing</a></li>
+    <li><a href="brief.html">Brief</a></li>
+    <li><a href="contact.html" class="active">Contact</a></li>
+    <li><a href="https://ac-portfolio-snowy.vercel.app" target="_blank" rel="noopener">Portfolio ↗</a></li>
+    <li><a href="brief.html" class="nav-cta">Consultation</a></li>
+  </ul>
+</nav>
+
+<!-- TOP HERO BAND -->
+<div class="contact-top">
+  <div class="contact-top-inner">
+    <div class="ct-left">
+      <p class="ct-eyebrow">Contact</p>
+      <h1 class="ct-title">Let's Build<br>Something.</h1>
+      <p class="ct-sub">Ask a question, start a conversation, or jump straight to The Foundation Brief.</p>
+      <div class="avail-badge">
+        <div class="avail-dot"></div>
+        <span class="avail-text">Currently Accepting New Projects · Detroit, MI</span>
+      </div>
+    </div>
+    <div class="ct-right">
+      <div class="ct-right-bg"></div>
+      <p class="eyebrow" style="position:relative;z-index:2;margin-bottom:1.75rem">Direct Lines</p>
+      <div class="float-cards">
+        <a href="/cdn-cgi/l/email-protection#6706140f0b021e05150206090906041508040c02131327000a060e0b4904080a" class="float-card reveal d1">
+          <div class="fc-icon">✉</div>
+          <div class="fc-meta"><div class="fc-label">Email</div><div class="fc-value"><span class="__cf_email__" data-cfemail="b1d0c2d9ddd4c8d3c3d4d0dfdfd0d2c3ded2dad4c5c5f1d6dcd0d8dd9fd2dedc">[email&#160;protected]</span></div></div>
+          <span class="fc-arrow">→</span>
+        </a>
+        <a href="https://linkedin.com/in/ashley-crockett-04a949223" target="_blank" rel="noopener" class="float-card reveal d2">
+          <div class="fc-icon">in</div>
+          <div class="fc-meta"><div class="fc-label">LinkedIn</div><div class="fc-value">ashley-crockett-04a949223</div></div>
+          <span class="fc-arrow">→</span>
+        </a>
+        <a href="https://github.com/aseology" target="_blank" rel="noopener" class="float-card reveal d3">
+          <div class="fc-icon">&lt;/&gt;</div>
+          <div class="fc-meta"><div class="fc-label">GitHub</div><div class="fc-value">github.com/aseology</div></div>
+          <span class="fc-arrow">→</span>
+        </a>
+        <a href="#" target="_blank" rel="noopener" class="float-card reveal d4">
+          <div class="fc-icon">↗</div>
+          <div class="fc-meta"><div class="fc-label">Portfolio</div><div class="fc-value">View Selected Work</div></div>
+          <span class="fc-arrow">→</span>
+        </a>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- 3-COLUMN BODY -->
+<div class="contact-body">
+  <!-- LEFT: Selected credentials -->
+  <div class="cb-left reveal from-left">
+    <p class="eyebrow">Background</p>
+    <div class="cred-list">
+      <div class="cred-item">
+        <div class="ci-org">Apple Developer Academy</div>
+        <div class="ci-role">iOS Program &amp; PM Lead</div>
+        <div class="ci-date">Aug 2025 – Present</div>
+      </div>
+      <div class="cred-item">
+        <div class="ci-org">DevsCreate313</div>
+        <div class="ci-role">Community Engagement Manager</div>
+        <div class="ci-date">2024 – Present</div>
+      </div>
+      <div class="cred-item">
+        <div class="ci-org">TechTown Hackathon</div>
+        <div class="ci-role">Top 6 of 90+ Participants</div>
+        <div class="ci-date">Sept 2025</div>
+      </div>
+      <div class="cred-item">
+        <div class="ci-org">Certifications</div>
+        <div class="ci-role">Google PM · Lean Six Sigma Green Belt</div>
+        <div class="ci-date">Current</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- CENTER: Form -->
+  <div class="cb-center">
+    <div id="contactForm">
+      <h2 class="form-title">Send A Message.</h2>
+      <p class="form-sub">Not ready for the full brief? Start here. I respond within 48 hours.</p>
+      <div class="form-fields">
+        <div class="field-row">
+          <div class="ffield"><label class="ff-label">Name</label><input type="text" class="ff-input" placeholder="Your name" id="cfName"></div>
+          <div class="ffield"><label class="ff-label">Email</label><input type="email" class="ff-input" placeholder="your@email.com" id="cfEmail"></div>
+        </div>
+        <div class="ffield"><label class="ff-label">What are we building?</label><input type="text" class="ff-input" placeholder="Project, event, product..." id="cfProject"></div>
+        <div class="ffield"><label class="ff-label">Your Message</label><textarea class="ff-textarea" rows="5" placeholder="No pitch required — just the honest version." id="cfMsg"></textarea></div>
+      </div>
+      <div class="form-footer">
+        <button class="btn-moss" onclick="submitContact()"><span>Send The Message</span><span>→</span></button>
+        <p class="form-note">Read personally.<br>Reply within 48 hours.</p>
+      </div>
+    </div>
+    <div class="contact-success" id="contactSuccess">
+      <div class="cs-icon">✓</div>
+      <h3 class="cs-title">Message Received.</h3>
+      <p class="cs-body">I'll respond within 48 hours — a response that respects your time as much as your vision.</p>
+      <div style="display:flex;gap:1rem;flex-wrap:wrap;justify-content:center">
+        <a href="brief.html" class="btn-moss"><span>Complete The Foundation Brief</span><span>→</span></a>
+        <a href="process.html" class="btn-ghost">See The Process</a>
+      </div>
+    </div>
+  </div>
+
+  <!-- RIGHT: Brief nudge + quick stats -->
+  <div class="cb-right reveal from-right">
+    <div class="brief-nudge">
+      <div class="bn-num">01</div>
+      <h3 class="bn-title">Ready to commit?</h3>
+      <p class="bn-body">The Foundation Brief is the fastest path to a real proposal. Eight questions, no fluff.</p>
+      <a href="brief.html" class="btn-moss" style="width:100%;justify-content:center"><span>Start The Brief</span><span>→</span></a>
+    </div>
+    <div>
+      <p class="eyebrow" style="margin-bottom:1.25rem">Quick Facts</p>
+      <div class="quick-stats">
+        <div class="qs-row"><div class="qs-label">Response Time</div><div class="qs-val"><span>48</span> Hours</div></div>
+        <div class="qs-row"><div class="qs-label">Rate</div><div class="qs-val"><span>$75</span> / hr</div></div>
+        <div class="qs-row"><div class="qs-label">Projects From</div><div class="qs-val"><span>$500</span></div></div>
+        <div class="qs-row"><div class="qs-label">Location</div><div class="qs-val">Detroit, <span>MI</span></div></div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<footer>
+  <div class="footer-logo">ARETE<span>&amp;</span>CO.</div>
+  <div class="footer-motto">Build with intention. Execute with precision.</div>
+  <div class="footer-links">
+    <a href="philosophy.html">Philosophy</a>
+    <a href="services.html">Services</a>
+    <a href="process.html">Process</a>
+    <a href="pricing.html">Pricing</a>
+    <a href="brief.html">Brief</a>
+    <a href="contact.html" class="active">Contact</a>
+    <a href="https://ac-portfolio-snowy.vercel.app" target="_blank" rel="noopener">Portfolio ↗</a>
+  </div>
+</footer>
+<script data-cfasync="false" src="/cdn-cgi/scripts/5c5dd728/cloudflare-static/email-decode.min.js"></script><script>// CROSSHAIR CURSOR
+(function(){
+  const c=document.getElementById('cursor'),r=document.getElementById('cursorRing');
+  if(!c||!r)return;
+  let mx=0,my=0;
+  document.addEventListener('mousemove',e=>{
+    mx=e.clientX;my=e.clientY;
+    c.style.left=mx+'px';c.style.top=my+'px';
+    r.style.left=mx+'px';r.style.top=my+'px';
+  });
+  document.querySelectorAll('a,button,.tcard,textarea,input,select,.pill').forEach(el=>{
+    el.addEventListener('mouseenter',()=>{c.classList.add('grow');r.classList.add('grow')});
+    el.addEventListener('mouseleave',()=>{c.classList.remove('grow');r.classList.remove('grow')});
+  });
+})();
+// NAV SCROLL
+(function(){const n=document.querySelector('nav');if(!n)return;window.addEventListener('scroll',()=>n.classList.toggle('scrolled',scrollY>50))})();
+// REVEAL
+(function(){
+  document.querySelectorAll('.reveal').forEach(el=>{
+    new IntersectionObserver(([e])=>{if(e.isIntersecting)el.classList.add('visible')},{threshold:.1}).observe(el);
+  });
+})();
+// ACTIVE NAV
+(function(){const p=location.pathname.split('/').pop()||'index.html';document.querySelectorAll('.nav-links a').forEach(a=>{if(a.getAttribute('href')===p)a.classList.add('active')})})();
+// COUNTER ANIMATION
+document.querySelectorAll('.counter').forEach(el=>{
+  new IntersectionObserver(([e])=>{
+    if(e.isIntersecting&&!el._done){
+      el._done=true;
+      const target=parseFloat(el.dataset.target),suffix=el.dataset.suffix||'',prefix=el.dataset.prefix||'',isFloat=String(target).includes('.');
+      let start=null;const dur=1400;
+      (function step(ts){if(!start)start=ts;const p=Math.min((ts-start)/dur,1),ease=1-Math.pow(1-p,3),val=isFloat?(target*ease).toFixed(1):Math.round(target*ease);el.textContent=prefix+val+suffix;if(p<1)requestAnimationFrame(step)})(performance.now());
+    }
+  },{threshold:.5}).observe(el);
+});
+
+function submitContact(){
+  const fields=[document.getElementById('cfName'),document.getElementById('cfEmail'),document.getElementById('cfMsg')];
+  let ok=true;
+  fields.forEach(f=>{if(!f||!f.value.trim()){if(f)f.style.borderColor='rgba(127,255,0,.5)';setTimeout(()=>{if(f)f.style.borderColor=''},2200);ok=false}});
+  if(!ok)return;
+  const form=document.getElementById('contactForm');
+  form.style.transition='opacity .5s';form.style.opacity='0';
+  setTimeout(

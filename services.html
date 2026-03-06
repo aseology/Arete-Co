@@ -1,0 +1,317 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1.0">
+<title>Services — The Structured Creative</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<style>
+@import url('https://fonts.googleapis.com/css2?family=Bebas+Neue&family=DM+Serif+Display:ital@0;1&family=Space+Mono:ital,wght@0,400;0,700;1,400&display=swap');
+:root{--charcoal:#1A1A1B;--obsidian:#111112;--linen:#F4F1EA;--linen-dim:#b8b4a8;--linen-faint:rgba(244,241,234,0.3);--moss:#7FFF00;--moss-dim:#5acc00;--moss-faint:rgba(127,255,0,0.06);--glass-border:rgba(244,241,234,0.08);--moss-border:rgba(127,255,0,0.2)}
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+html{scroll-behavior:smooth}
+body{background:var(--charcoal);color:var(--linen);font-family:'Space Mono',monospace;overflow-x:hidden;cursor:none}
+body::before{content:'';position:fixed;inset:0;background-image:url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noise'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noise)' opacity='0.03'/%3E%3C/svg%3E");background-size:200px;pointer-events:none;z-index:1000;opacity:.5}
+/* CROSSHAIR CURSOR */
+.cursor{position:fixed;pointer-events:none;z-index:9999;transform:translate(-50%,-50%);width:20px;height:20px}
+.cursor::before,.cursor::after{content:'';position:absolute;background:var(--moss);transition:all .15s}
+.cursor::before{width:1px;height:20px;left:50%;top:0;transform:translateX(-50%)}
+.cursor::after{width:20px;height:1px;top:50%;left:0;transform:translateY(-50%)}
+.cursor-ring{position:fixed;width:6px;height:6px;border:1px solid var(--moss);pointer-events:none;z-index:9998;transform:translate(-50%,-50%);transition:width .2s ease-out,height .2s ease-out,opacity .2s;opacity:.7}
+.cursor.grow::before{height:28px}
+.cursor.grow::after{width:28px}
+.cursor-ring.grow{width:10px;height:10px;opacity:.4}
+nav{position:fixed;top:0;left:0;right:0;z-index:900;display:flex;justify-content:space-between;align-items:center;padding:1rem 2.5rem;transition:background .3s}
+nav.scrolled{background:rgba(17,17,18,.97);backdrop-filter:blur(12px);border-bottom:1px solid var(--glass-border)}
+.nav-logo{font-family:'Bebas Neue',sans-serif;font-size:1rem;letter-spacing:.25em;color:var(--linen);text-decoration:none}
+.nav-logo span{color:var(--moss)}
+.nav-links{display:flex;gap:1rem;list-style:none;align-items:center;flex-wrap:nowrap}
+.nav-links a{font-size:.52rem;letter-spacing:.13em;text-transform:uppercase;color:var(--linen-dim);text-decoration:none;transition:color .2s;position:relative;padding-bottom:2px}
+.nav-links a::after{content:'';position:absolute;bottom:0;left:0;width:0;height:1px;background:var(--moss);transition:width .25s}
+.nav-links a:hover,.nav-links a.active{color:var(--moss)}
+.nav-links a:hover::after,.nav-links a.active::after{width:100%}
+.nav-cta{border:1px solid rgba(127,255,0,.45)!important;color:var(--moss)!important;padding:.38rem 1rem!important;font-size:.52rem!important;letter-spacing:.16em!important;transition:border-color .2s,color .2s!important}
+.nav-cta:hover{border-color:var(--moss)!important;color:var(--linen)!important}
+.nav-cta::after{display:none!important}
+.marquee-wrap{background:var(--moss);overflow:hidden;padding:.7rem 0}
+.marquee-track{display:flex;width:max-content;animation:marquee 26s linear infinite}
+.marquee-item{font-family:'Bebas Neue',sans-serif;font-size:.82rem;letter-spacing:.28em;color:var(--obsidian);padding:0 2rem;white-space:nowrap}
+.marquee-dot{opacity:.35;margin:0 .3rem}
+.eyebrow{font-size:.54rem;letter-spacing:.4em;text-transform:uppercase;color:var(--moss);display:flex;align-items:center;gap:.75rem;margin-bottom:1rem}
+.eyebrow::before{content:'';width:32px;height:1px;background:var(--moss);flex-shrink:0}
+.reveal{opacity:0;transform:translateY(32px);transition:opacity .75s ease,transform .75s ease}
+.reveal.from-left{transform:translateX(-32px)}
+.reveal.from-right{transform:translateX(32px)}
+.reveal.visible{opacity:1;transform:none}
+.d1{transition-delay:.1s}.d2{transition-delay:.2s}.d3{transition-delay:.3s}.d4{transition-delay:.4s}
+.btn-moss{display:inline-flex;align-items:center;gap:1rem;background:var(--moss);color:var(--obsidian);font-family:'Bebas Neue',sans-serif;font-size:.9rem;letter-spacing:.2em;padding:1rem 2rem;text-decoration:none;border:none;cursor:pointer;position:relative;overflow:hidden;transition:color .3s}
+.btn-moss::after{content:'';position:absolute;inset:0;background:var(--obsidian);border:1px solid var(--moss);transform:translateX(-101%);transition:transform .3s ease}
+.btn-moss:hover{color:var(--moss)}
+.btn-moss:hover::after{transform:translateX(0)}
+.btn-moss span{position:relative;z-index:1}
+.btn-ghost{display:inline-flex;align-items:center;gap:.75rem;border:1px solid var(--glass-border);color:var(--linen-dim);font-family:'Bebas Neue',sans-serif;font-size:.82rem;letter-spacing:.18em;padding:.85rem 1.6rem;text-decoration:none;transition:border-color .2s,color .2s}
+.btn-ghost:hover{border-color:var(--moss);color:var(--moss)}
+.tcard{background:var(--obsidian);border:1px solid var(--glass-border);padding:2.5rem;position:relative;overflow:hidden;transition:transform .3s ease,border-color .3s,box-shadow .3s}
+.tcard:hover{transform:translateY(-5px);border-color:var(--moss-border);box-shadow:0 16px 48px rgba(127,255,0,.07)}
+.tcard::after{content:'';position:absolute;bottom:0;left:0;right:0;height:2px;background:var(--moss);transform:scaleX(0);transform-origin:left;transition:transform .4s ease}
+.tcard:hover::after{transform:scaleX(1)}
+footer{padding:2.5rem 3.5rem;background:var(--obsidian);border-top:1px solid var(--glass-border);display:grid;grid-template-columns:1fr auto 1fr;align-items:center;gap:2rem}
+.footer-logo{font-family:'Bebas Neue',sans-serif;font-size:.95rem;letter-spacing:.25em}
+.footer-logo span{color:var(--moss)}
+.footer-motto{font-family:'DM Serif Display',serif;font-style:italic;font-size:.75rem;color:var(--linen-dim);text-align:center}
+.footer-links{display:flex;gap:1.75rem;justify-content:flex-end;flex-wrap:wrap}
+.footer-links a{font-size:.56rem;letter-spacing:.18em;text-transform:uppercase;color:var(--linen-dim);text-decoration:none;transition:color .2s}
+.footer-links a:hover{color:var(--moss)}
+@keyframes marquee{from{transform:translateX(0)}to{transform:translateX(-50%)}}
+@keyframes fadeUp{from{opacity:0;transform:translateY(20px)}to{opacity:1;transform:none}}
+@keyframes fadeIn{from{opacity:0}to{opacity:1}}
+@keyframes pulse{0%,100%{opacity:.4}50%{opacity:1}}
+@media(max-width:900px){nav{padding:1.2rem 1.5rem}.nav-links li:not(:last-child):not(:nth-last-child(2)):not(:nth-last-child(3)){display:none}footer{grid-template-columns:1fr;text-align:center;padding:2rem 1.5rem}.footer-links{justify-content:center}}
+
+/* ── SERVICES HERO ── */
+.svc-hero-band{min-height:auto;background:var(--obsidian);display:flex;align-items:flex-end;padding:8rem 3.5rem 4rem;position:relative;overflow:hidden;border-bottom:1px solid var(--glass-border)}
+.svc-hero-band::before{content:'SERVICES';font-family:'Bebas Neue',sans-serif;font-size:22vw;color:rgba(127,255,0,.03);position:absolute;left:-.02em;bottom:-.1em;letter-spacing:-.02em;pointer-events:none;line-height:1;white-space:nowrap}
+.svc-hero-inner{display:grid;grid-template-columns:1fr 1fr;gap:4rem;align-items:end;position:relative;z-index:1;width:100%}
+.svc-hero-title{font-family:'Bebas Neue',sans-serif;font-size:clamp(3.5rem,7vw,8rem);line-height:.86;opacity:0;animation:fadeUp .9s .3s forwards}
+.svc-hero-sub{font-family:'DM Serif Display',serif;font-style:italic;font-size:1.05rem;color:var(--linen-dim);line-height:1.7;max-width:400px;opacity:0;animation:fadeUp .9s .5s forwards;align-self:flex-end}
+/* AVAILABILITY TAG — replaces "available now" from index */
+.avail-strip{background:var(--charcoal);border-bottom:1px solid var(--glass-border);padding:1.1rem 3.5rem;display:flex;align-items:center;gap:1.5rem}
+.avail-dot{width:7px;height:7px;border-radius:50%;background:var(--moss);animation:pulse 2.2s ease-in-out infinite;flex-shrink:0}
+.avail-text{font-size:.58rem;letter-spacing:.28em;text-transform:uppercase;color:var(--linen-dim)}
+.avail-text span{color:var(--moss)}
+/* DYNAMIC SKILL GRID — replaces scrolling marquee on services */
+.skill-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:1px;background:var(--glass-border);border-bottom:1px solid var(--glass-border)}
+.skill-tile{background:var(--obsidian);padding:2rem 2rem;position:relative;overflow:hidden;transition:background .3s}
+.skill-tile:hover{background:rgba(127,255,0,.04)}
+.skill-tile-cat{font-size:.5rem;letter-spacing:.35em;text-transform:uppercase;color:var(--moss);margin-bottom:.75rem}
+.skill-tile-items{display:flex;flex-wrap:wrap;gap:.4rem}
+.skill-tag{font-family:'Bebas Neue',sans-serif;font-size:.72rem;letter-spacing:.12em;color:var(--linen-dim);padding:.2rem .55rem;border:1px solid var(--glass-border);transition:border-color .2s,color .2s}
+.skill-tile:hover .skill-tag{border-color:var(--moss-border);color:var(--linen)}
+
+.review-block{background:var(--obsidian);border-left:2px solid var(--moss);padding:1.1rem 1.2rem}
+.review-stars{color:var(--moss);font-size:.7rem;letter-spacing:.1em;margin-bottom:.5rem}
+.review-text{font-family:'DM Serif Display',serif;font-style:italic;font-size:.8rem;color:var(--linen-dim);line-height:1.65;margin-bottom:.5rem}
+.review-attr{font-size:.55rem;letter-spacing:.2em;text-transform:uppercase;color:rgba(184,180,168,.45)}
+/* PILLAR BANDS */
+.pillar-band{display:grid;grid-template-columns:1fr 1fr;border-top:1px solid var(--glass-border);min-height:400px}
+.pillar-band.flip .pillar-info{order:2}
+.pillar-band.flip .pillar-detail{order:1;border-right:1px solid var(--glass-border);border-left:none}
+.pillar-info{padding:4rem 3.5rem;display:flex;flex-direction:column;justify-content:space-between;background:var(--charcoal);position:relative;overflow:hidden}
+.pillar-bg{font-family:'Bebas Neue',sans-serif;font-size:13rem;color:rgba(127,255,0,.04);position:absolute;right:-1rem;bottom:-2rem;letter-spacing:-.02em;line-height:1;pointer-events:none}
+.p-num{font-size:.62rem;letter-spacing:.3em;text-transform:uppercase;color:var(--moss);font-family:'Bebas Neue',sans-serif;margin-bottom:1.5rem}
+.p-name{font-family:'Bebas Neue',sans-serif;font-size:clamp(2rem,3.2vw,3.2rem);line-height:.92;margin-bottom:.5rem}
+.p-tag{font-family:'DM Serif Display',serif;font-style:italic;font-size:.9rem;color:var(--moss);display:block;margin-bottom:1.5rem}
+.p-promise{background:var(--obsidian);border-left:2px solid var(--moss);padding:1rem 1.2rem;font-family:'DM Serif Display',serif;font-style:italic;font-size:.82rem;color:var(--linen-dim);line-height:1.6}
+.pillar-detail{padding:4rem 3.5rem;background:var(--obsidian);border-left:1px solid var(--glass-border);display:flex;flex-direction:column;gap:2rem}
+.p-desc{font-size:.72rem;line-height:1.9;color:var(--linen-dim)}
+.focus-label{font-size:.52rem;letter-spacing:.35em;text-transform:uppercase;color:var(--moss);margin-bottom:.9rem}
+.focus-pills{display:flex;flex-wrap:wrap;gap:.5rem}
+.pill{font-size:.6rem;letter-spacing:.1em;padding:.32rem .72rem;border:1px solid var(--glass-border);color:var(--linen-dim);transition:border-color .2s,color .2s,background .2s;cursor:default}
+.pill:hover{border-color:var(--moss);color:var(--moss);background:rgba(127,255,0,.04)}
+@media(max-width:900px){
+  .svc-hero-band{padding:6rem 1.5rem 3rem}.svc-hero-inner{grid-template-columns:1fr;gap:2rem}
+  .skill-grid{grid-template-columns:1fr 1fr}.avail-strip{padding:1rem 1.5rem}
+  .pillar-band,.pillar-band.flip{grid-template-columns:1fr}
+  .pillar-band.flip .pillar-info,.pillar-band.flip .pillar-detail{order:unset}
+  .pillar-detail{border-left:none;border-top:1px solid var(--glass-border)}
+  .pillar-band.flip .pillar-detail{border-right:none;border-top:1px solid var(--glass-border)}
+  .pillar-info,.pillar-detail{padding:2.5rem 1.5rem}
+}
+@media(max-width:600px){.skill-grid{grid-template-columns:1fr}}
+</style>
+</head>
+<body>
+<div class="cursor" id="cursor"></div>
+<div class="cursor-ring" id="cursorRing"></div>
+<nav>
+  <a href="index.html" class="nav-logo">ARETE<span>&amp;</span>CO.</a>
+  <ul class="nav-links">
+    <li><a href="philosophy.html">Philosophy</a></li>
+    <li><a href="services.html" class="active">Services</a></li>
+    <li><a href="process.html">Process</a></li>
+    <li><a href="pricing.html">Pricing</a></li>
+    <li><a href="brief.html">Brief</a></li>
+    <li><a href="contact.html">Contact</a></li>
+    <li><a href="https://ac-portfolio-snowy.vercel.app" target="_blank" rel="noopener">Portfolio ↗</a></li>
+    <li><a href="brief.html" class="nav-cta">Consultation</a></li>
+  </ul>
+</nav>
+
+<section class="svc-hero-band">
+  <div class="svc-hero-inner">
+    <div>
+      <p class="eyebrow">Services</p>
+      <h1 class="svc-hero-title">The Three<br>Rooms.</h1>
+    </div>
+    <p class="svc-hero-sub">Every house needs a framework, a build, and a soul. I work across all three — and I don't leave until you have the keys.</p>
+  </div>
+</section>
+
+<!-- AVAILABILITY — moved from index -->
+<div class="avail-strip">
+  <div class="avail-dot"></div>
+  <p class="avail-text"><span>Currently Accepting New Projects</span> · Detroit, MI · $75/hr · Projects from $500</p>
+</div>
+
+<!-- SKILL GRID — dynamic replacement for scrolling bar -->
+<div class="skill-grid">
+  <div class="skill-tile reveal d1">
+    <div class="skill-tile-cat">PM Skills</div>
+    <div class="skill-tile-items">
+      <span class="skill-tag">PRD Authoring</span><span class="skill-tag">Roadmapping</span><span class="skill-tag">MVP Scoping</span><span class="skill-tag">Agile / Scrum</span><span class="skill-tag">OKRs</span><span class="skill-tag">Sprint Planning</span>
+    </div>
+  </div>
+  <div class="skill-tile reveal d2">
+    <div class="skill-tile-cat">Technical</div>
+    <div class="skill-tile-items">
+      <span class="skill-tag">Swift / SwiftUI</span><span class="skill-tag">Xcode</span><span class="skill-tag">React</span><span class="skill-tag">HTML / CSS / JS</span><span class="skill-tag">AI Integration</span><span class="skill-tag">CRM Systems</span>
+    </div>
+  </div>
+  <div class="skill-tile reveal d3">
+    <div class="skill-tile-cat">Community</div>
+    <div class="skill-tile-items">
+      <span class="skill-tag">Dev Relations</span><span class="skill-tag">Event Production</span><span class="skill-tag">Public Speaking</span><span class="skill-tag">Content Strategy</span><span class="skill-tag">100K+ Following</span>
+    </div>
+  </div>
+  <div class="skill-tile reveal d4">
+    <div class="skill-tile-cat">Credentials</div>
+    <div class="skill-tile-items">
+      <span class="skill-tag">Google PM Cert</span><span class="skill-tag">Lean Six Sigma Green Belt</span><span class="skill-tag">Apple Developer Academy</span><span class="skill-tag">Top 6 of 90+ Hackathon</span>
+    </div>
+  </div>
+</div>
+
+<!-- PILLAR 01 -->
+<div class="pillar-band">
+  <div class="pillar-info reveal from-left">
+    <div>
+      <p class="p-num">01</p>
+      <h2 class="p-name">Project Management</h2>
+      <span class="p-tag">The Framework</span>
+      <div class="p-promise review-block">
+        <div class="review-stars">★★★★★</div>
+        <p class="review-text">"Ashley came in and immediately brought structure to a project that had been spinning for months. She built a roadmap that actually held."</p>
+        <p class="review-attr">— Community Program Lead, Detroit</p>
+      </div>
+    </div>
+    <div class="pillar-bg">01</div>
+  </div>
+  <div class="pillar-detail reveal from-right">
+    <p class="p-desc">High-functioning frameworks that protect your creative energy. Systems that feel like yours — not like a manual you have to study.</p>
+    <div>
+      <p class="focus-label">Focus Areas</p>
+      <div class="focus-pills">
+        <span class="pill">Scope Definition</span><span class="pill">Timeline Architecture</span><span class="pill">Resource Allocation</span><span class="pill">Risk Planning</span><span class="pill">Stakeholder Alignment</span><span class="pill">Agile Workflows</span>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- PILLAR 02 -->
+<div class="pillar-band flip">
+  <div class="pillar-info reveal from-right">
+    <div>
+      <p class="p-num">02</p>
+      <h2 class="p-name">Development</h2>
+      <span class="p-tag">The Build</span>
+      <div class="p-promise review-block">
+        <div class="review-stars">★★★★★</div>
+        <p class="review-text">"She scoped our MVP in a single session, caught three things we hadn't accounted for, and we launched on time. Rare combination of builder and strategist."</p>
+        <p class="review-attr">— Founder, Tech Startup</p>
+      </div>
+    </div>
+    <div class="pillar-bg">02</div>
+  </div>
+  <div class="pillar-detail reveal from-left">
+    <p class="p-desc">Digital products to immersive physical events. Where the organic becomes tangible and the idea stops being an idea.</p>
+    <div>
+      <p class="focus-label">Focus Areas</p>
+      <div class="focus-pills">
+        <span class="pill">Product Design</span><span class="pill">Event Production</span><span class="pill">MVP Scoping</span><span class="pill">Vendor Coordination</span><span class="pill">QA Frameworks</span><span class="pill">Launch Execution</span>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- PILLAR 03 -->
+<div class="pillar-band">
+  <div class="pillar-info reveal from-left">
+    <div>
+      <p class="p-num">03</p>
+      <h2 class="p-name">Community Advocacy</h2>
+      <span class="p-tag">The Soul</span>
+      <div class="p-promise review-block">
+        <div class="review-stars">★★★★★</div>
+        <p class="review-text">"Our community events went from chaotic to consistently excellent. Ashley understands the difference between an engaged audience and an informed one."</p>
+        <p class="review-attr">— DevsCREATE313, Detroit</p>
+      </div>
+    </div>
+    <div class="pillar-bg">03</div>
+  </div>
+  <div class="pillar-detail reveal from-right">
+    <p class="p-desc">Your community feels supported, not managed. Sustainable scale that keeps the connection alive as the numbers grow.</p>
+    <div>
+      <p class="focus-label">Focus Areas</p>
+      <div class="focus-pills">
+        <span class="pill">Community Architecture</span><span class="pill">Retention Strategy</span><span class="pill">Engagement Design</span><span class="pill">Advocacy Programs</span><span class="pill">Sustainable Growth</span><span class="pill">Health Metrics</span>
+      </div>
+    </div>
+  </div>
+</div>
+
+<section style="padding:4rem 3.5rem;background:var(--obsidian);display:flex;justify-content:space-between;align-items:center;gap:2rem;flex-wrap:wrap;border-top:1px solid var(--glass-border)">
+  <div class="reveal"><p class="eyebrow">Next Step</p><h3 style="font-family:'Bebas Neue',sans-serif;font-size:clamp(2rem,3vw,3.5rem);line-height:.92">See The Build<br>In Motion.</h3></div>
+  <div style="display:flex;gap:1rem;flex-wrap:wrap" class="reveal"><a href="process.html" class="btn-moss"><span>View The Process</span><span>→</span></a><a href="pricing.html" class="btn-ghost">See Pricing</a></div>
+</section>
+<footer>
+  <div class="footer-logo">ARETE<span>&amp;</span>CO.</div>
+  <div class="footer-motto">Build with intention. Execute with precision.</div>
+  <div class="footer-links">
+    <a href="philosophy.html">Philosophy</a>
+    <a href="services.html" class="active">Services</a>
+    <a href="process.html">Process</a>
+    <a href="pricing.html">Pricing</a>
+    <a href="brief.html">Brief</a>
+    <a href="contact.html">Contact</a>
+    <a href="https://ac-portfolio-snowy.vercel.app" target="_blank" rel="noopener">Portfolio ↗</a>
+  </div>
+</footer>
+<script>// CROSSHAIR CURSOR
+(function(){
+  const c=document.getElementById('cursor'),r=document.getElementById('cursorRing');
+  if(!c||!r)return;
+  let mx=0,my=0;
+  document.addEventListener('mousemove',e=>{
+    mx=e.clientX;my=e.clientY;
+    c.style.left=mx+'px';c.style.top=my+'px';
+    r.style.left=mx+'px';r.style.top=my+'px';
+  });
+  document.querySelectorAll('a,button,.tcard,textarea,input,select,.pill').forEach(el=>{
+    el.addEventListener('mouseenter',()=>{c.classList.add('grow');r.classList.add('grow')});
+    el.addEventListener('mouseleave',()=>{c.classList.remove('grow');r.classList.remove('grow')});
+  });
+})();
+// NAV SCROLL
+(function(){const n=document.querySelector('nav');if(!n)return;window.addEventListener('scroll',()=>n.classList.toggle('scrolled',scrollY>50))})();
+// REVEAL
+(function(){
+  document.querySelectorAll('.reveal').forEach(el=>{
+    new IntersectionObserver(([e])=>{if(e.isIntersecting)el.classList.add('visible')},{threshold:.1}).observe(el);
+  });
+})();
+// ACTIVE NAV
+(function(){const p=location.pathname.split('/').pop()||'index.html';document.querySelectorAll('.nav-links a').forEach(a=>{if(a.getAttribute('href')===p)a.classList.add('active')})})();
+// COUNTER ANIMATION
+document.querySelectorAll('.counter').forEach(el=>{
+  new IntersectionObserver(([e])=>{
+    if(e.isIntersecting&&!el._done){
+      el._done=true;
+      const target=parseFloat(el.dataset.target),suffix=el.dataset.suffix||'',prefix=el.dataset.prefix||'',isFloat=String(target).includes('.');
+      let start=null;const dur=1400;
+      (function step(ts){if(!start)start=ts;const p=Math.min((ts-start)/dur,1),ease=1-Math.pow(1-p,3),val=isFloat?(target*ease).toFixed(1):Math.round(target*ease);el.textContent=prefix+val+suffix;if(p<1)requestAnimationFrame(step)})(performance.now());
+    }
+  },{threshold:.5}).observe(el);
+});
+</script>
+</body>
+</html>

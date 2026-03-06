@@ -1,0 +1,184 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Arete & Co. — Operations</title>
+<link href="https://fonts.googleapis.com/css2?family=Space+Mono:wght@400;700&family=DM+Serif+Display:ital@0;1&display=swap" rel="stylesheet">
+<style>
+  :root{--charcoal:#1A1A1B;--obsidian:#111112;--linen:#F4F1EA;--linen-dim:#b8b4a8;--moss:#7FFF00;--moss-dim:#5acc00;--dark2:#2a2a2b;--gray:#888580;--red:#ff4d4d;--amber:#ffb347;--purple:#9b7fe8;}
+  *{box-sizing:border-box;margin:0;padding:0;}
+  body{background:var(--obsidian);color:var(--linen);font-family:'Space Mono',monospace;min-height:100vh;cursor:crosshair;}
+
+  /* LOGIN */
+  #login{position:fixed;inset:0;background:var(--obsidian);z-index:999;display:flex;align-items:center;justify-content:center;}
+  #login.hidden{display:none;}
+  .login-box{background:var(--charcoal);border:1px solid var(--dark2);border-top:3px solid var(--moss);padding:2.5rem;width:100%;max-width:360px;position:relative;animation:up .3s ease;}
+  @keyframes up{from{opacity:0;transform:translateY(10px)}to{opacity:1;transform:none}}
+  .lc{position:absolute;width:12px;height:12px;border-color:var(--moss);border-style:solid;opacity:.4;}
+  .lc.tl{top:7px;left:7px;border-width:1px 0 0 1px}.lc.tr{top:7px;right:7px;border-width:1px 1px 0 0}
+  .lc.bl{bottom:7px;left:7px;border-width:0 0 1px 1px}.lc.br{bottom:7px;right:7px;border-width:0 1px 1px 0}
+  .l-wm{font-weight:700;font-size:.8rem;letter-spacing:.3em;margin-bottom:.25rem;}
+  .l-wm span{color:var(--moss);}
+  .l-sub{font-size:.52rem;letter-spacing:.15em;color:var(--gray);text-transform:uppercase;margin-bottom:1.75rem;}
+  .l-lbl{font-size:.52rem;letter-spacing:.15em;color:var(--gray);text-transform:uppercase;display:block;margin-bottom:.35rem;}
+  .l-inp{width:100%;background:var(--obsidian);border:1px solid var(--dark2);color:var(--linen);font-family:'Space Mono',monospace;font-size:.78rem;padding:.6rem .8rem;outline:none;margin-bottom:1.1rem;transition:border-color .2s;}
+  .l-inp:focus{border-color:var(--moss);}
+  .l-inp.err{border-color:var(--red);animation:shake .3s;}
+  @keyframes shake{0%,100%{transform:translateX(0)}25%{transform:translateX(-5px)}75%{transform:translateX(5px)}}
+  .l-btn{width:100%;background:var(--moss);color:var(--obsidian);border:none;font-family:'Space Mono',monospace;font-weight:700;font-size:.62rem;letter-spacing:.2em;text-transform:uppercase;padding:.7rem;cursor:pointer;transition:background .2s;}
+  .l-btn:hover{background:var(--moss-dim);}
+  .l-err{font-size:.58rem;color:var(--red);margin-top:.65rem;min-height:1rem;}
+
+  /* APP */
+  #app{display:none;}
+  #app.visible{display:block;}
+
+  header{background:var(--charcoal);border-bottom:1px solid var(--dark2);padding:0 2rem;display:flex;align-items:center;justify-content:space-between;height:52px;position:sticky;top:0;z-index:10;}
+  .logo{font-weight:700;font-size:.75rem;letter-spacing:.25em;}
+  .logo span{color:var(--moss);}
+  .hdr-right{display:flex;align-items:center;gap:1rem;}
+  .hdr-pill{font-size:.5rem;letter-spacing:.15em;text-transform:uppercase;color:var(--moss);background:rgba(127,255,0,.08);border:1px solid rgba(127,255,0,.2);padding:.22rem .6rem;}
+  .btn-logout{background:none;border:1px solid var(--dark2);color:var(--gray);font-family:'Space Mono',monospace;font-size:.52rem;letter-spacing:.1em;text-transform:uppercase;padding:.32rem .7rem;cursor:pointer;transition:all .2s;}
+  .btn-logout:hover{border-color:var(--red);color:var(--red);}
+
+  main{padding:2rem;max-width:1100px;margin:0 auto;}
+
+  .page-eyebrow{font-size:.52rem;letter-spacing:.22em;text-transform:uppercase;color:var(--moss);margin-bottom:.4rem;}
+  .page-title{font-family:'DM Serif Display',serif;font-size:1.75rem;color:var(--linen);margin-bottom:.3rem;}
+  .page-sub{font-size:.65rem;color:var(--gray);margin-bottom:2rem;line-height:1.6;}
+
+  /* TOOL GRID */
+  .tool-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(240px,1fr));gap:1rem;margin-bottom:2.5rem;}
+  .tool-card{background:var(--charcoal);border:1px solid var(--dark2);padding:1.5rem 1.5rem 1.25rem;display:flex;flex-direction:column;text-decoration:none;transition:border-color .2s,transform .15s;position:relative;overflow:hidden;}
+  .tool-card:hover{border-color:var(--moss);transform:translateY(-2px);}
+  .tool-card::after{content:'';position:absolute;bottom:0;left:0;right:0;height:2px;background:var(--dark2);transition:background .2s;}
+  .tool-card:hover::after{background:var(--moss);}
+  .tool-icon{font-size:1.4rem;margin-bottom:.75rem;line-height:1;}
+  .tool-name{font-size:.62rem;font-weight:700;letter-spacing:.15em;text-transform:uppercase;color:var(--linen);margin-bottom:.35rem;}
+  .tool-desc{font-size:.6rem;color:var(--gray);line-height:1.6;flex:1;}
+  .tool-tag{font-size:.46rem;letter-spacing:.1em;text-transform:uppercase;padding:.18rem .45rem;border:1px solid;display:inline-block;margin-top:.75rem;width:fit-content;}
+  .tag-internal{color:var(--moss);border-color:rgba(127,255,0,.3);}
+  .tag-client{color:var(--amber);border-color:rgba(255,179,71,.3);}
+  .tag-content{color:var(--purple);border-color:rgba(155,127,232,.3);}
+  .tag-finance{color:#4fc3f7;border-color:rgba(79,195,247,.3);}
+
+  /* SECTION HEAD */
+  .sec-head{font-size:.52rem;letter-spacing:.22em;text-transform:uppercase;color:var(--moss);margin-bottom:.85rem;padding-bottom:.45rem;border-bottom:1px solid var(--dark2);}
+
+  /* QUICK LINKS to website */
+  .site-links{display:flex;flex-wrap:wrap;gap:.5rem;margin-bottom:2.5rem;}
+  .site-link{font-family:'Space Mono',monospace;font-size:.52rem;letter-spacing:.1em;text-transform:uppercase;padding:.35rem .75rem;border:1px solid var(--dark2);color:var(--gray);text-decoration:none;transition:all .2s;}
+  .site-link:hover{border-color:var(--linen-dim);color:var(--linen-dim);}
+  .site-link.external::after{content:' ↗';color:var(--gray);}
+</style>
+</head>
+<body>
+
+<div id="login">
+  <div class="login-box">
+    <div class="lc tl"></div><div class="lc tr"></div><div class="lc bl"></div><div class="lc br"></div>
+    <div class="l-wm">ARETE <span>&</span> CO.</div>
+    <div class="l-sub">Internal Operations — Private</div>
+    <label class="l-lbl">Password</label>
+    <input class="l-inp" id="pw" type="password" placeholder="Enter password" onkeydown="if(event.key==='Enter')tryLogin()">
+    <button class="l-btn" onclick="tryLogin()">Enter Operations</button>
+    <div class="l-err" id="pw-err"></div>
+  </div>
+</div>
+
+<div id="app">
+  <header>
+    <div class="logo">ARETE <span>&</span> CO. <span style="color:var(--gray);font-weight:400;margin-left:.5rem;">/ OPS</span></div>
+    <div class="hdr-right">
+      <div class="hdr-pill">Internal Access</div>
+      <button class="btn-logout" onclick="logout()">Logout</button>
+    </div>
+  </header>
+
+  <main>
+    <div class="page-eyebrow">Operations Dashboard</div>
+    <div class="page-title">Your Tools</div>
+    <div class="page-sub">All internal systems in one place. Password-protected — not linked from the public website.</div>
+
+    <div class="sec-head">Core Tools</div>
+    <div class="tool-grid">
+      <a href="arete_crm.html" class="tool-card">
+        <div class="tool-icon">⬡</div>
+        <div class="tool-name">Client Pipeline (CRM)</div>
+        <div class="tool-desc">Kanban pipeline, project timelines, payment tracking, client portal links, and project threads.</div>
+        <div class="tool-tag tag-internal">Internal</div>
+      </a>
+      <a href="arete_client.html" class="tool-card">
+        <div class="tool-icon">◈</div>
+        <div class="tool-name">Client Portal</div>
+        <div class="tool-desc">Token-gated client view — project profile, shared timeline, and message thread. Share via CRM.</div>
+        <div class="tool-tag tag-client">Client-Facing</div>
+      </a>
+      <a href="arete_expenses.html" class="tool-card">
+        <div class="tool-icon">$</div>
+        <div class="tool-name">Expense Tracker</div>
+        <div class="tool-desc">YTD spend, tax deductible totals, category tracking, monthly chart, and CSV export.</div>
+        <div class="tool-tag tag-finance">Finance</div>
+      </a>
+      <a href="arete_content_calendar.html" class="tool-card">
+        <div class="tool-icon">◻</div>
+        <div class="tool-name">Content Calendar</div>
+        <div class="tool-desc">4-week posting schedule with platform filters, add/edit posts, notes, and file attachments.</div>
+        <div class="tool-tag tag-content">Content</div>
+      </a>
+      <a href="arete_templates.html" class="tool-card">
+        <div class="tool-icon">▤</div>
+        <div class="tool-name">Document Templates</div>
+        <div class="tool-desc">Download service agreements, SOWs, invoices, NDAs, and rate sheets as ready-to-edit DOCX files.</div>
+        <div class="tool-tag tag-internal">Templates</div>
+      </a>
+    </div>
+
+    <div class="sec-head">Website Pages</div>
+    <div class="site-links">
+      <a href="index.html" class="site-link">Home</a>
+      <a href="philosophy.html" class="site-link">Philosophy</a>
+      <a href="services.html" class="site-link">Services</a>
+      <a href="process.html" class="site-link">Process</a>
+      <a href="pricing.html" class="site-link">Pricing</a>
+      <a href="brief.html" class="site-link">Foundation Brief</a>
+      <a href="contact.html" class="site-link">Contact</a>
+      <a href="https://ac-portfolio-snowy.vercel.app" class="site-link external" target="_blank">Portfolio</a>
+    </div>
+  </main>
+</div>
+
+<script>
+  const OPS_PW = 'arete2026';
+  const OPS_KEY = 'arete_ops_auth';
+
+  function tryLogin() {
+    const v = document.getElementById('pw').value;
+    if (v === OPS_PW) {
+      sessionStorage.setItem(OPS_KEY,'true');
+      document.getElementById('login').classList.add('hidden');
+      document.getElementById('app').classList.add('visible');
+    } else {
+      const inp = document.getElementById('pw');
+      inp.classList.add('err'); inp.value='';
+      document.getElementById('pw-err').textContent='Incorrect password.';
+      setTimeout(()=>inp.classList.remove('err'),400);
+    }
+  }
+
+  function logout() {
+    sessionStorage.removeItem(OPS_KEY);
+    document.getElementById('login').classList.remove('hidden');
+    document.getElementById('app').classList.remove('visible');
+    document.getElementById('pw').value='';
+    document.getElementById('pw-err').textContent='';
+  }
+
+  if (sessionStorage.getItem(OPS_KEY)==='true') {
+    document.getElementById('login').classList.add('hidden');
+    document.getElementById('app').classList.add('visible');
+  }
+</script>
+</body>
+</html>

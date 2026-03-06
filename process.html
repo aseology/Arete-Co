@@ -1,0 +1,313 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1.0">
+<title>Process — The Structured Creative</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<style>
+@import url('https://fonts.googleapis.com/css2?family=Bebas+Neue&family=DM+Serif+Display:ital@0;1&family=Space+Mono:ital,wght@0,400;0,700;1,400&display=swap');
+:root{--charcoal:#1A1A1B;--obsidian:#111112;--linen:#F4F1EA;--linen-dim:#b8b4a8;--linen-faint:rgba(244,241,234,0.3);--moss:#7FFF00;--moss-dim:#5acc00;--moss-faint:rgba(127,255,0,0.06);--glass-border:rgba(244,241,234,0.08);--moss-border:rgba(127,255,0,0.2)}
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+html{scroll-behavior:smooth}
+body{background:var(--charcoal);color:var(--linen);font-family:'Space Mono',monospace;overflow-x:hidden;cursor:none}
+body::before{content:'';position:fixed;inset:0;background-image:url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noise'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noise)' opacity='0.03'/%3E%3C/svg%3E");background-size:200px;pointer-events:none;z-index:1000;opacity:.5}
+/* CROSSHAIR CURSOR */
+.cursor{position:fixed;pointer-events:none;z-index:9999;transform:translate(-50%,-50%);width:20px;height:20px}
+.cursor::before,.cursor::after{content:'';position:absolute;background:var(--moss);transition:all .15s}
+.cursor::before{width:1px;height:20px;left:50%;top:0;transform:translateX(-50%)}
+.cursor::after{width:20px;height:1px;top:50%;left:0;transform:translateY(-50%)}
+.cursor-ring{position:fixed;width:6px;height:6px;border:1px solid var(--moss);pointer-events:none;z-index:9998;transform:translate(-50%,-50%);transition:width .2s ease-out,height .2s ease-out,opacity .2s;opacity:.7}
+.cursor.grow::before{height:28px}
+.cursor.grow::after{width:28px}
+.cursor-ring.grow{width:10px;height:10px;opacity:.4}
+nav{position:fixed;top:0;left:0;right:0;z-index:900;display:flex;justify-content:space-between;align-items:center;padding:1rem 2.5rem;transition:background .3s}
+nav.scrolled{background:rgba(17,17,18,.97);backdrop-filter:blur(12px);border-bottom:1px solid var(--glass-border)}
+.nav-logo{font-family:'Bebas Neue',sans-serif;font-size:1rem;letter-spacing:.25em;color:var(--linen);text-decoration:none}
+.nav-logo span{color:var(--moss)}
+.nav-links{display:flex;gap:1rem;list-style:none;align-items:center;flex-wrap:nowrap}
+.nav-links a{font-size:.52rem;letter-spacing:.13em;text-transform:uppercase;color:var(--linen-dim);text-decoration:none;transition:color .2s;position:relative;padding-bottom:2px}
+.nav-links a::after{content:'';position:absolute;bottom:0;left:0;width:0;height:1px;background:var(--moss);transition:width .25s}
+.nav-links a:hover,.nav-links a.active{color:var(--moss)}
+.nav-links a:hover::after,.nav-links a.active::after{width:100%}
+.nav-cta{border:1px solid rgba(127,255,0,.45)!important;color:var(--moss)!important;padding:.38rem 1rem!important;font-size:.52rem!important;letter-spacing:.16em!important;transition:border-color .2s,color .2s!important}
+.nav-cta:hover{border-color:var(--moss)!important;color:var(--linen)!important}
+.nav-cta::after{display:none!important}
+.marquee-wrap{background:var(--moss);overflow:hidden;padding:.7rem 0}
+.marquee-track{display:flex;width:max-content;animation:marquee 26s linear infinite}
+.marquee-item{font-family:'Bebas Neue',sans-serif;font-size:.82rem;letter-spacing:.28em;color:var(--obsidian);padding:0 2rem;white-space:nowrap}
+.marquee-dot{opacity:.35;margin:0 .3rem}
+.eyebrow{font-size:.54rem;letter-spacing:.4em;text-transform:uppercase;color:var(--moss);display:flex;align-items:center;gap:.75rem;margin-bottom:1rem}
+.eyebrow::before{content:'';width:32px;height:1px;background:var(--moss);flex-shrink:0}
+.reveal{opacity:0;transform:translateY(32px);transition:opacity .75s ease,transform .75s ease}
+.reveal.from-left{transform:translateX(-32px)}
+.reveal.from-right{transform:translateX(32px)}
+.reveal.visible{opacity:1;transform:none}
+.d1{transition-delay:.1s}.d2{transition-delay:.2s}.d3{transition-delay:.3s}.d4{transition-delay:.4s}
+.btn-moss{display:inline-flex;align-items:center;gap:1rem;background:var(--moss);color:var(--obsidian);font-family:'Bebas Neue',sans-serif;font-size:.9rem;letter-spacing:.2em;padding:1rem 2rem;text-decoration:none;border:none;cursor:pointer;position:relative;overflow:hidden;transition:color .3s}
+.btn-moss::after{content:'';position:absolute;inset:0;background:var(--obsidian);border:1px solid var(--moss);transform:translateX(-101%);transition:transform .3s ease}
+.btn-moss:hover{color:var(--moss)}
+.btn-moss:hover::after{transform:translateX(0)}
+.btn-moss span{position:relative;z-index:1}
+.btn-ghost{display:inline-flex;align-items:center;gap:.75rem;border:1px solid var(--glass-border);color:var(--linen-dim);font-family:'Bebas Neue',sans-serif;font-size:.82rem;letter-spacing:.18em;padding:.85rem 1.6rem;text-decoration:none;transition:border-color .2s,color .2s}
+.btn-ghost:hover{border-color:var(--moss);color:var(--moss)}
+.tcard{background:var(--obsidian);border:1px solid var(--glass-border);padding:2.5rem;position:relative;overflow:hidden;transition:transform .3s ease,border-color .3s,box-shadow .3s}
+.tcard:hover{transform:translateY(-5px);border-color:var(--moss-border);box-shadow:0 16px 48px rgba(127,255,0,.07)}
+.tcard::after{content:'';position:absolute;bottom:0;left:0;right:0;height:2px;background:var(--moss);transform:scaleX(0);transform-origin:left;transition:transform .4s ease}
+.tcard:hover::after{transform:scaleX(1)}
+footer{padding:2.5rem 3.5rem;background:var(--obsidian);border-top:1px solid var(--glass-border);display:grid;grid-template-columns:1fr auto 1fr;align-items:center;gap:2rem}
+.footer-logo{font-family:'Bebas Neue',sans-serif;font-size:.95rem;letter-spacing:.25em}
+.footer-logo span{color:var(--moss)}
+.footer-motto{font-family:'DM Serif Display',serif;font-style:italic;font-size:.75rem;color:var(--linen-dim);text-align:center}
+.footer-links{display:flex;gap:1.75rem;justify-content:flex-end;flex-wrap:wrap}
+.footer-links a{font-size:.56rem;letter-spacing:.18em;text-transform:uppercase;color:var(--linen-dim);text-decoration:none;transition:color .2s}
+.footer-links a:hover{color:var(--moss)}
+@keyframes marquee{from{transform:translateX(0)}to{transform:translateX(-50%)}}
+@keyframes fadeUp{from{opacity:0;transform:translateY(20px)}to{opacity:1;transform:none}}
+@keyframes fadeIn{from{opacity:0}to{opacity:1}}
+@keyframes pulse{0%,100%{opacity:.4}50%{opacity:1}}
+@media(max-width:900px){nav{padding:1.2rem 1.5rem}.nav-links li:not(:last-child):not(:nth-last-child(2)):not(:nth-last-child(3)){display:none}footer{grid-template-columns:1fr;text-align:center;padding:2rem 1.5rem}.footer-links{justify-content:center}}
+
+.proc-hero{background:var(--charcoal);padding:12rem 3.5rem 5rem;border-bottom:1px solid var(--glass-border);position:relative;overflow:hidden}
+.proc-hero-inner{display:grid;grid-template-columns:1fr 1fr;gap:4rem;align-items:end}
+.proc-hero-title{font-family:'Bebas Neue',sans-serif;font-size:clamp(3.5rem,7vw,8.5rem);line-height:.86;opacity:0;animation:fadeUp .9s .3s forwards}
+.proc-hero-right{opacity:0;animation:fadeUp .9s .5s forwards}
+.proc-hero-sub{font-family:'DM Serif Display',serif;font-style:italic;font-size:1.05rem;color:var(--linen-dim);line-height:1.7;margin-bottom:2rem}
+/* SCHEMATIC DIVIDER — replaces scrolling bar */
+.schematic{background:var(--obsidian);padding:2.5rem 3.5rem;border-bottom:1px solid var(--glass-border);overflow:hidden}
+.schematic svg{width:100%;height:60px;display:block}
+/* STATS */
+.stats-row{display:grid;grid-template-columns:repeat(4,1fr);gap:1px;background:var(--glass-border);border-bottom:1px solid var(--glass-border)}
+.stat-cell{background:var(--obsidian);padding:2.5rem 2rem;text-align:center}
+.stat-num{font-family:'Bebas Neue',sans-serif;font-size:3.2rem;line-height:1;color:var(--moss)}
+.stat-label{font-size:.56rem;letter-spacing:.2em;text-transform:uppercase;color:var(--linen-dim);margin-top:.4rem}
+/* TIMELINE */
+.timeline-wrap{padding:5rem 3.5rem 0;background:var(--charcoal)}
+.timeline-head{margin-bottom:3.5rem}
+.timeline{position:relative;display:flex;flex-direction:column;gap:0}
+/* vertical line */
+.timeline::before{content:'';position:absolute;left:52px;top:0;bottom:0;width:1px;background:var(--glass-border)}
+.phase-row{display:grid;grid-template-columns:106px 1fr 1fr;gap:0;border-bottom:1px solid var(--glass-border);position:relative}
+.phase-row:last-child{border-bottom:none}
+/* Moss line draws down on hover */
+.phase-row::before{content:'';position:absolute;left:52px;top:0;width:1px;height:0;background:var(--moss);transition:height .5s ease;z-index:2}
+.phase-row:hover::before{height:100%}
+.phase-dot-col{display:flex;flex-direction:column;align-items:center;padding:3rem 0;z-index:3;position:relative}
+.phase-dot{width:13px;height:13px;border-radius:50%;border:1.5px solid rgba(127,255,0,.35);background:var(--charcoal);transition:background .3s,border-color .3s,box-shadow .3s;margin-top:.2rem}
+.phase-row:hover .phase-dot{background:var(--moss);border-color:var(--moss);box-shadow:0 0 14px rgba(127,255,0,.45)}
+.phase-left{padding:3rem 2.5rem;border-right:1px solid var(--glass-border)}
+.phase-phase{font-size:.52rem;letter-spacing:.3em;text-transform:uppercase;color:var(--moss);margin-bottom:.5rem}
+.phase-title{font-family:'Bebas Neue',sans-serif;font-size:1.9rem;letter-spacing:.04em;line-height:1;margin-bottom:.4rem}
+.phase-subtitle{font-family:'DM Serif Display',serif;font-style:italic;font-size:.88rem;color:var(--linen-dim);display:block;margin-bottom:1rem}
+.tone-tag{display:inline-block;background:rgba(127,255,0,.07);border:1px solid var(--moss-border);padding:.22rem .65rem;font-size:.53rem;letter-spacing:.2em;text-transform:uppercase;color:var(--moss)}
+.phase-right{padding:3rem 2.5rem;background:var(--obsidian);transition:background .3s}
+.phase-row:hover .phase-right{background:rgba(127,255,0,.025)}
+.phase-desc{font-size:.7rem;line-height:1.9;color:var(--linen-dim);margin-bottom:1.5rem}
+.phase-acts{list-style:none;display:flex;flex-direction:column;gap:.5rem}
+.phase-acts li{font-size:.66rem;color:var(--linen-dim);padding-left:1.2rem;position:relative;line-height:1.65}
+.phase-acts li::before{content:'→';position:absolute;left:0;color:var(--moss);font-size:.6rem}
+/* BRIEF ANCHOR */
+.brief-anchor{margin:4rem 3.5rem;background:var(--obsidian);border:1px solid var(--glass-border);border-top:2px solid var(--moss);padding:3.5rem;display:grid;grid-template-columns:1fr auto;gap:3rem;align-items:center}
+.ba-title{font-family:'Bebas Neue',sans-serif;font-size:clamp(1.8rem,3vw,3rem);line-height:.9;margin-bottom:.75rem}
+.ba-body{font-size:.7rem;line-height:1.85;color:var(--linen-dim);max-width:440px}
+@media(max-width:900px){
+  .proc-hero{padding:10rem 1.5rem 3.5rem}.proc-hero-inner{grid-template-columns:1fr;gap:2rem}
+  .stats-row{grid-template-columns:1fr 1fr}.schematic{padding:2rem 1.5rem}
+  .timeline-wrap{padding:3.5rem 1.5rem 0}.timeline::before{left:32px}
+  .phase-row{grid-template-columns:68px 1fr}.phase-row::before{left:32px}
+  .phase-right{display:none}
+  .brief-anchor{grid-template-columns:1fr;gap:2rem;margin:3rem 1.5rem;padding:2.5rem}
+}
+</style>
+</head>
+<body>
+<div class="cursor" id="cursor"></div>
+<div class="cursor-ring" id="cursorRing"></div>
+<nav>
+  <a href="index.html" class="nav-logo">ARETE<span>&amp;</span>CO.</a>
+  <ul class="nav-links">
+    <li><a href="philosophy.html">Philosophy</a></li>
+    <li><a href="services.html">Services</a></li>
+    <li><a href="process.html" class="active">Process</a></li>
+    <li><a href="pricing.html">Pricing</a></li>
+    <li><a href="brief.html">Brief</a></li>
+    <li><a href="contact.html">Contact</a></li>
+    <li><a href="https://ac-portfolio-snowy.vercel.app" target="_blank" rel="noopener">Portfolio ↗</a></li>
+    <li><a href="brief.html" class="nav-cta">Consultation</a></li>
+  </ul>
+</nav>
+
+<section class="proc-hero">
+  <div class="proc-hero-inner">
+    <div>
+      <p class="eyebrow">Process</p>
+      <h1 class="proc-hero-title">The Structured<br>Path.</h1>
+    </div>
+    <div class="proc-hero-right">
+      <p class="proc-hero-sub">Four phases. One direction. No surprises — just the path forward, laid out in hard geometry.</p>
+      <a href="brief.html" class="btn-moss"><span>Start With The Brief</span><span>→</span></a>
+    </div>
+  </div>
+</section>
+
+<!-- SCHEMATIC DIVIDER — blueprint-style phase diagram, no looping text -->
+<div class="schematic">
+  <svg viewBox="0 0 1200 60" fill="none" xmlns="http://www.w3.org/2000/svg" preserveAspectRatio="xMidYMid meet">
+    <!-- Phase connector line -->
+    <line x1="60" y1="30" x2="1140" y2="30" stroke="rgba(127,255,0,0.15)" stroke-width="1" stroke-dasharray="4 4"/>
+    <!-- Phase nodes -->
+    <circle cx="60" cy="30" r="6" fill="none" stroke="#7FFF00" stroke-width="1.5"/>
+    <circle cx="60" cy="30" r="2" fill="#7FFF00"/>
+    <circle cx="360" cy="30" r="6" fill="none" stroke="rgba(127,255,0,0.5)" stroke-width="1"/>
+    <circle cx="360" cy="30" r="2" fill="rgba(127,255,0,0.5)"/>
+    <circle cx="660" cy="30" r="6" fill="none" stroke="rgba(127,255,0,0.5)" stroke-width="1"/>
+    <circle cx="660" cy="30" r="2" fill="rgba(127,255,0,0.5)"/>
+    <circle cx="960" cy="30" r="6" fill="none" stroke="rgba(127,255,0,0.5)" stroke-width="1"/>
+    <circle cx="960" cy="30" r="2" fill="rgba(127,255,0,0.5)"/>
+    <circle cx="1140" cy="30" r="4" fill="rgba(127,255,0,0.3)"/>
+    <!-- Labels -->
+    <text x="60" y="52" fill="rgba(127,255,0,0.7)" font-size="9" font-family="monospace" text-anchor="middle" letter-spacing="2">01 FOUNDATION</text>
+    <text x="360" y="52" fill="rgba(127,255,0,0.5)" font-size="9" font-family="monospace" text-anchor="middle" letter-spacing="2">02 BLUEPRINT</text>
+    <text x="660" y="52" fill="rgba(127,255,0,0.5)" font-size="9" font-family="monospace" text-anchor="middle" letter-spacing="2">03 CONSTRUCTION</text>
+    <text x="960" y="52" fill="rgba(127,255,0,0.5)" font-size="9" font-family="monospace" text-anchor="middle" letter-spacing="2">04 OPEN HOUSE</text>
+    <!-- Corner marks -->
+    <line x1="0" y1="0" x2="16" y2="0" stroke="rgba(127,255,0,0.3)" stroke-width="1"/>
+    <line x1="0" y1="0" x2="0" y2="16" stroke="rgba(127,255,0,0.3)" stroke-width="1"/>
+    <line x1="1200" y1="0" x2="1184" y2="0" stroke="rgba(127,255,0,0.3)" stroke-width="1"/>
+    <line x1="1200" y1="0" x2="1200" y2="16" stroke="rgba(127,255,0,0.3)" stroke-width="1"/>
+  </svg>
+</div>
+
+<!-- STATS -->
+<div class="stats-row">
+  <div class="stat-cell reveal d1"><div class="stat-num counter" data-target="4">4</div><div class="stat-label">Phases</div></div>
+  <div class="stat-cell reveal d2"><div class="stat-num">48HR</div><div class="stat-label">Proposal Turnaround</div></div>
+  <div class="stat-cell reveal d3"><div class="stat-num counter" data-target="8">8</div><div class="stat-label">Brief Questions</div></div>
+  <div class="stat-cell reveal d4"><div class="stat-num">$0</div><div class="stat-label">To Start The Conversation</div></div>
+</div>
+
+<!-- TIMELINE -->
+<div class="timeline-wrap">
+  <div class="timeline-head reveal">
+    <p class="eyebrow">The Lifecycle</p>
+    <h2 style="font-family:'Bebas Neue',sans-serif;font-size:clamp(2rem,3.5vw,4rem);line-height:.9">Four Phases.<br>One Direction.</h2>
+  </div>
+  <div class="timeline">
+    <div class="phase-row reveal">
+      <div class="phase-dot-col"><div class="phase-dot"></div></div>
+      <div class="phase-left">
+        <p class="phase-phase">Phase 01 — Consultation</p>
+        <h3 class="phase-title">The Foundation.</h3>
+        <span class="phase-subtitle">Define intent before materials.</span>
+        <span class="tone-tag">Observational</span>
+      </div>
+      <div class="phase-right">
+        <p class="phase-desc">We sit across the table. I need to see the raw vision — not the polished pitch. Intent gets defined before a single resource is committed.</p>
+        <ul class="phase-acts"><li>Complete The Foundation Brief</li><li>Stakeholder & vision alignment</li><li>Problem definition & scope read</li></ul>
+      </div>
+    </div>
+    <div class="phase-row reveal">
+      <div class="phase-dot-col"><div class="phase-dot"></div></div>
+      <div class="phase-left">
+        <p class="phase-phase">Phase 02 — Proposal</p>
+        <h3 class="phase-title">The Blueprint.</h3>
+        <span class="phase-subtitle">Geometry meets vision.</span>
+        <span class="tone-tag">Technical</span>
+      </div>
+      <div class="phase-right">
+        <p class="phase-desc">A clear, formatted plan — timeline, resources, milestones, and a definition of "done" we both hold each other to.</p>
+        <ul class="phase-acts"><li>Full scope documentation</li><li>Timeline & milestone mapping</li><li>Success metrics definition</li></ul>
+      </div>
+    </div>
+    <div class="phase-row reveal">
+      <div class="phase-dot-col"><div class="phase-dot"></div></div>
+      <div class="phase-left">
+        <p class="phase-phase">Phase 03 — Development</p>
+        <h3 class="phase-title">The Construction.</h3>
+        <span class="phase-subtitle">Ideas become real.</span>
+        <span class="tone-tag">Collaborative</span>
+      </div>
+      <div class="phase-right">
+        <p class="phase-desc">We build the engine, refine the texture, test the weight. Iterative cycles, every decision oriented toward what we defined in Phase 02.</p>
+        <ul class="phase-acts"><li>Iterative build cycles & check-ins</li><li>Vendor & team coordination</li><li>QA & stress-testing</li></ul>
+      </div>
+    </div>
+    <div class="phase-row reveal">
+      <div class="phase-dot-col"><div class="phase-dot"></div></div>
+      <div class="phase-left">
+        <p class="phase-phase">Phase 04 — Launch</p>
+        <h3 class="phase-title">The Open House.</h3>
+        <span class="phase-subtitle">Keys are yours.</span>
+        <span class="tone-tag">Empowered</span>
+      </div>
+      <div class="phase-right">
+        <p class="phase-desc">You step into a finished space — supported, documented, and built to scale. The project graduates into its next chapter.</p>
+        <ul class="phase-acts"><li>Full launch execution</li><li>Operational handoff & docs</li><li>Retrospective & growth roadmap</li></ul>
+      </div>
+    </div>
+  </div>
+  <div class="brief-anchor reveal">
+    <div>
+      <p class="eyebrow">Start Here</p>
+      <h3 class="ba-title">The Process Begins<br>With The Brief.</h3>
+      <p class="ba-body">Phase 01 starts with eight questions. No pitch required — just the honest foundation of your project.</p>
+    </div>
+    <div style="display:flex;flex-direction:column;gap:1rem">
+      <a href="brief.html" class="btn-moss"><span>Complete The Foundation Brief</span><span>→</span></a>
+      <a href="contact.html" class="btn-ghost">Ask A Question First</a>
+    </div>
+  </div>
+  <div style="height:4rem"></div>
+</div>
+<footer>
+  <div class="footer-logo">ARETE<span>&amp;</span>CO.</div>
+  <div class="footer-motto">Build with intention. Execute with precision.</div>
+  <div class="footer-links">
+    <a href="philosophy.html">Philosophy</a>
+    <a href="services.html">Services</a>
+    <a href="process.html" class="active">Process</a>
+    <a href="pricing.html">Pricing</a>
+    <a href="brief.html">Brief</a>
+    <a href="contact.html">Contact</a>
+    <a href="https://ac-portfolio-snowy.vercel.app" target="_blank" rel="noopener">Portfolio ↗</a>
+  </div>
+</footer>
+<script>// CROSSHAIR CURSOR
+(function(){
+  const c=document.getElementById('cursor'),r=document.getElementById('cursorRing');
+  if(!c||!r)return;
+  let mx=0,my=0;
+  document.addEventListener('mousemove',e=>{
+    mx=e.clientX;my=e.clientY;
+    c.style.left=mx+'px';c.style.top=my+'px';
+    r.style.left=mx+'px';r.style.top=my+'px';
+  });
+  document.querySelectorAll('a,button,.tcard,textarea,input,select,.pill').forEach(el=>{
+    el.addEventListener('mouseenter',()=>{c.classList.add('grow');r.classList.add('grow')});
+    el.addEventListener('mouseleave',()=>{c.classList.remove('grow');r.classList.remove('grow')});
+  });
+})();
+// NAV SCROLL
+(function(){const n=document.querySelector('nav');if(!n)return;window.addEventListener('scroll',()=>n.classList.toggle('scrolled',scrollY>50))})();
+// REVEAL
+(function(){
+  document.querySelectorAll('.reveal').forEach(el=>{
+    new IntersectionObserver(([e])=>{if(e.isIntersecting)el.classList.add('visible')},{threshold:.1}).observe(el);
+  });
+})();
+// ACTIVE NAV
+(function(){const p=location.pathname.split('/').pop()||'index.html';document.querySelectorAll('.nav-links a').forEach(a=>{if(a.getAttribute('href')===p)a.classList.add('active')})})();
+// COUNTER ANIMATION
+document.querySelectorAll('.counter').forEach(el=>{
+  new IntersectionObserver(([e])=>{
+    if(e.isIntersecting&&!el._done){
+      el._done=true;
+      const target=parseFloat(el.dataset.target),suffix=el.dataset.suffix||'',prefix=el.dataset.prefix||'',isFloat=String(target).includes('.');
+      let start=null;const dur=1400;
+      (function step(ts){if(!start)start=ts;const p=Math.min((ts-start)/dur,1),ease=1-Math.pow(1-p,3),val=isFloat?(target*ease).toFixed(1):Math.round(target*ease);el.textContent=prefix+val+suffix;if(p<1)requestAnimationFrame(step)})(performance.now());
+    }
+  },{threshold:.5}).observe(el);
+});
+</script>
+</body>
+</html>
