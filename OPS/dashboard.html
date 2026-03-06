@@ -1,16 +1,105 @@
-<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
-<script>
-  // Replace these with the keys you found earlier!
-  const supabase = supabase.createClient('https://etsztcmmyhephvrrdpyp.supabase.co', 'YOUR_ANON_KEY');
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Arete Ops Dashboard</title>
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    <style>
+        body { font-family: -apple-system, sans-serif; padding: 40px; background: #f4f7f6; color: #333; }
+        .header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 30px; }
+        .section { background: white; padding: 20px; border-radius: 8px; box-shadow: 0 2px 4px rgba(0,0,0,0.1); margin-bottom: 30px; }
+        table { width: 100%; border-collapse: collapse; margin-top: 10px; }
+        th, td { padding: 12px; border-bottom: 1px solid #eee; text-align: left; }
+        th { background: #fafafa; font-weight: 600; }
+        button { padding: 8px 16px; cursor: pointer; background: #ff4757; color: white; border: none; border-radius: 4px; }
+        .status { padding: 4px 8px; border-radius: 4px; font-size: 0.85em; background: #e2e8f0; }
+    </style>
+</head>
+<body>
 
-  async function checkAccess() {
-    const { data: { user } } = await supabase.auth.getUser();
-    if (!user) {
-      // If no one is logged in, send them to the login page
-      window.location.href = "/login.html"; 
-    }
-  }
-  checkAccess();
-</script>
+    <div class="header">
+        <h1>Internal Operations</h1>
+        <button onclick="signOut()">Sign Out</button>
+    </div>
 
-<h1>Welcome to your Internal Ops Dashboard</h1>
+    <div class="section">
+        <h2>🚀 Active Projects</h2>
+        <table>
+            <thead>
+                <tr>
+                    <th>Project</th>
+                    <th>Status</th>
+                </tr>
+            </thead>
+            <tbody id="projects-body"></tbody>
+        </table>
+    </div>
+
+    <div class="section">
+        <h2>💬 Recent Comments</h2>
+        <table>
+            <thead>
+                <tr>
+                    <th>Date</th>
+                    <th>User</th>
+                    <th>Message</th>
+                </tr>
+            </thead>
+            <tbody id="comments-body"></tbody>
+        </table>
+    </div>
+
+    <script>
+        // Setup
+        const supabaseUrl = 'https://etsztcmmyhephvrrdpyp.supabase.co';
+        const supabaseKey = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImV0c3p0Y21teWhlcGh2cnJkcHlwIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzI3NDAxNzYsImV4cCI6MjA4ODMxNjE3Nn0.1bT6mjYxep88pnibQyyWikg2HtTUF8at5NGPXB3VmzI'
+';
+        const supabase = supabase.createClient(supabaseUrl, supabaseKey);
+
+        // 1. Protection & Entry Point
+        async function init() {
+            const { data: { user } } = await supabase.auth.getUser();
+            if (!user) {
+                window.location.href = "/login.html";
+            } else {
+                fetchProjects();
+                fetchComments();
+            }
+        }
+
+        // 2. Load Projects
+        async function fetchProjects() {
+            const { data, error } = await supabase.from('projects').select('*');
+            if (data) {
+                document.getElementById('projects-body').innerHTML = data.map(p => `
+                    <tr>
+                        <td><strong>${p.title || p.name || 'Untitled'}</strong></td>
+                        <td><span class="status">${p.status || 'Active'}</span></td>
+                    </tr>
+                `).join('');
+            }
+        }
+
+        // 3. Load Comments
+        async function fetchComments() {
+            const { data, error } = await supabase.from('comments').select('*');
+            if (data) {
+                document.getElementById('comments-body').innerHTML = data.map(c => `
+                    <tr>
+                        <td>${new Date(c.created_at).toLocaleDateString()}</td>
+                        <td>${c.user_name || 'Anonymous'}</td>
+                        <td>${c.content || c.comment_text || 'No text'}</td>
+                    </tr>
+                `).join('');
+            }
+        }
+
+        async function signOut() {
+            await supabase.auth.signOut();
+            window.location.href = "/login.html";
+        }
+
+        init();
+    </script>
+</body>
+</html>
