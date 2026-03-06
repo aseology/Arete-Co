@@ -68,31 +68,32 @@
         }
 
         // 2. Load Projects
-        async function fetchProjects() {
-            const { data, error } = await supabase.from('projects').select('*');
-            if (data) {
-                document.getElementById('projects-body').innerHTML = data.map(p => `
-                    <tr>
-                        <td><strong>${p.title || p.name || 'Untitled'}</strong></td>
-                        <td><span class="status">${p.status || 'Active'}</span></td>
-                    </tr>
-                `).join('');
-            }
-        }
+      // --- Update these two functions in your OPS/dashboard.html ---
 
-        // 3. Load Comments
-        async function fetchComments() {
-            const { data, error } = await supabase.from('comments').select('*');
-            if (data) {
-                document.getElementById('comments-body').innerHTML = data.map(c => `
-                    <tr>
-                        <td>${new Date(c.created_at).toLocaleDateString()}</td>
-                        <td>${c.user_name || 'Anonymous'}</td>
-                        <td>${c.content || c.comment_text || 'No text'}</td>
-                    </tr>
-                `).join('');
-            }
-        }
+async function fetchProjects() {
+    const { data, error } = await supabase.from('projects').select('*');
+    if (data) {
+        document.getElementById('projects-body').innerHTML = data.map(p => `
+            <tr>
+                <td><strong>${p.project_name || 'Untitled'}</strong></td>
+                <td><span class="status">${p.stage || 'N/A'}</span></td>
+            </tr>
+        `).join('');
+    }
+}
+
+async function fetchComments() {
+    const { data, error } = await supabase.from('comments').select('*');
+    if (data) {
+        document.getElementById('comments-body').innerHTML = data.map(c => `
+            <tr>
+                <td>${new Date(c.created_at).toLocaleDateString()}</td>
+                <td>${c.author || 'Anonymous'}</td>
+                <td>${c.body || 'No text'}</td>
+            </tr>
+        `).join('');
+    }
+}
 
         async function signOut() {
             await supabase.auth.signOut();
