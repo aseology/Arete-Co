@@ -23,84 +23,80 @@
     </div>
 
     <div class="section">
-        <h2>🚀 Active Projects</h2>
+        <h2>Active Projects</h2>
         <table>
-            <thead>
-                <tr>
-                    <th>Project</th>
-                    <th>Status</th>
-                </tr>
-            </thead>
-            <tbody id="projects-body"></tbody>
-        </table>
-    </div>
-
-    <div class="section">
-        <h2>💬 Recent Comments</h2>
-        <table>
-            <thead>
-                <tr>
-                    <th>Date</th>
-                    <th>User</th>
-                    <th>Message</th>
-                </tr>
-            </thead>
-            <tbody id="comments-body"></tbody>
-        </table>
+  <thead>
+    <tr>
+      <th>Project</th>
+      <th>Status</th>
+    </tr>
+  </thead>
+  <tbody id="projects-body">
+    </tbody>
+<table>
+  <thead>
+    <tr>
+      <th>Date</th>
+      <th>User</th>
+      <th>Message</th>
+    </tr>
+  </thead>
+  <tbody id="comments-body">
+    </tbody>
+</table>
     </div>
 
     <script>
-        // Setup
-        const supabaseUrl = 'https://etsztcmmyhephvrrdpyp.supabase.co';
-        const supabaseKey = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImV0c3p0Y21teWhlcGh2cnJkcHlwIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzI3NDAxNzYsImV4cCI6MjA4ODMxNjE3Nn0.1bT6mjYxep88pnibQyyWikg2HtTUF8at5NGPXB3VmzI'
-';
-        const supabase = supabase.createClient(supabaseUrl, supabaseKey);
+  // Initializing Supabase
+  const supabaseUrl = 'https://etsztcmmyhephvrrdpyp.supabase.co';
+  const supabaseKey = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImV0c3p0Y21teWhlcGh2cnJkcHlwIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzI3NDAxNzYsImV4cCI6MjA4ODMxNjE3Nn0.1bT6mjYxep88pnibQyyWikg2HtTUF8at5NGPXB3VmzI';
+  const _supabase = supabase.createClient(supabaseUrl, supabaseKey);
 
-        // 1. Protection & Entry Point
-        async function init() {
-            const { data: { user } } = await supabase.auth.getUser();
-            if (!user) {
-                window.location.href = "/login.html";
-            } else {
-                fetchProjects();
-                fetchComments();
-            }
-        }
+  // 1. Protection: If not logged in, boot them to login.html
+  async function init() {
+    const { data: { user } } = await _supabase.auth.getUser();
+    if (!user) {
+      window.location.href = "/login.html";
+    } else {
+      fetchProjects();
+      fetchComments();
+    }
+  }
 
-        // 2. Load Projects
-      // --- Update these two functions in your OPS/dashboard.html ---
-
-async function fetchProjects() {
-    const { data, error } = await supabase.from('projects').select('*');
+  // 2. Load Projects (Using your 'project_name' and 'stage' columns)
+  async function fetchProjects() {
+    // Note: use the _supabase variable name from your script
+    const { data, error } = await _supabase.from('projects').select('*');
     if (data) {
         document.getElementById('projects-body').innerHTML = data.map(p => `
             <tr>
-                <td><strong>${p.project_name || 'Untitled'}</strong></td>
-                <td><span class="status">${p.stage || 'N/A'}</span></td>
+                <td><strong>${p.project_name}</strong></td>
+                <td><span class="status">${p.stage}</span></td>
             </tr>
         `).join('');
     }
 }
 
 async function fetchComments() {
-    const { data, error } = await supabase.from('comments').select('*');
+    const { data, error } = await _supabase.from('comments').select('*');
     if (data) {
         document.getElementById('comments-body').innerHTML = data.map(c => `
             <tr>
                 <td>${new Date(c.created_at).toLocaleDateString()}</td>
-                <td>${c.author || 'Anonymous'}</td>
-                <td>${c.body || 'No text'}</td>
+                <td>${c.author}</td>
+                <td>${c.body}</td>
             </tr>
         `).join('');
     }
 }
 
-        async function signOut() {
-            await supabase.auth.signOut();
-            window.location.href = "/login.html";
-        }
+  async function signOut() {
+    await _supabase.auth.signOut();
+    window.location.href = "/login.html";
+  }
 
-        init();
-    </script>
+  // Run the check when the page loads
+  init();
+</script>
 </body>
 </html>
