@@ -47,7 +47,7 @@
             transition: background 0.2s;
         }
         button:hover { background: #000; }
-        .error-msg { color: #ff4757; font-size: 14px; margin-top: 10px; display: none; }
+        .error-msg { color: #ff4757; font-size: 14px; margin-top: 10px; display: none; padding: 5px; }
     </style>
 </head>
 <body>
@@ -61,30 +61,39 @@
 </div>
 
 <script>
-  // Initializing Supabase with your project details
+  // Initializing Supabase
   const supabaseUrl = 'https://etsztcmmyhephvrrdpyp.supabase.co';
-  const supabaseKey = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImV0c3p0Y21teWhlcGh2cnJkcHlwIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzI3NDAxNzYsImV4cCI6MjA4ODMxNjE3Nn0.1bT6mjYxep88pnibQyyWikg2HtTUF8at5NGPXB3VmzI'
-';
-  const supabase = supabase.createClient(supabaseUrl, supabaseKey);
+  const supabaseKey = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImV0c3p0Y21teWhlcGh2cnJkcHlwIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzI3NDAxNzYsImV4cCI6MjA4ODMxNjE3Nn0.1bT6mjYxep88pnibQyyWikg2HtTUF8at5NGPXB3VmzI';
+  const _supabase = supabase.createClient(supabaseUrl, supabaseKey);
 
+  // 1. Check if user is already logged in
+  async function checkUser() {
+    const { data } = await _supabase.auth.getSession();
+    if (data.session) {
+      window.location.href = "/OPS/dashboard.html";
+    }
+  }
+  checkUser();
+
+  // 2. Sign In Function
   async function signIn() {
     const email = document.getElementById('email').value;
     const password = document.getElementById('password').value;
     const errorDisplay = document.getElementById('error-display');
     
-    // Attempt to sign in
-    const { error } = await supabase.auth.signInWithPassword({ email, password });
+    errorDisplay.style.display = 'none';
+
+    const { error } = await _supabase.auth.signInWithPassword({ email, password });
     
     if (error) {
       errorDisplay.innerText = error.message;
       errorDisplay.style.display = 'block';
     } else {
-      // Redirecting to your dashboard in the OPS folder
       window.location.href = "/OPS/dashboard.html"; 
     }
   }
 
-  // Allow pressing "Enter" to log in
+  // 3. Enter key support
   document.addEventListener('keypress', function (e) {
     if (e.key === 'Enter') {
       signIn();
