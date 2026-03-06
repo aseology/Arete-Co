@@ -1,0 +1,16 @@
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<script>
+  // Replace these with the keys you found earlier!
+  const supabase = supabase.createClient('https://etsztcmmyhephvrrdpyp.supabase.co', 'YOUR_ANON_KEY');
+
+  async function checkAccess() {
+    const { data: { user } } = await supabase.auth.getUser();
+    if (!user) {
+      // If no one is logged in, send them to the login page
+      window.location.href = "/login.html"; 
+    }
+  }
+  checkAccess();
+</script>
+
+<h1>Welcome to your Internal Ops Dashboard</h1>
