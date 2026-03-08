@@ -223,25 +223,17 @@
 </head>
 <body>
 
-<div id="login-screen" style="position:fixed;inset:0;background:#111112;z-index:9999;display:flex;align-items:center;justify-content:center;">
-  <div style="background:#1A1A1B;border:1px solid #2a2a2b;border-top:2px solid #7FFF00;padding:2.5rem;width:100%;max-width:360px;text-align:center;">
-    <div style="font-weight:700;font-size:.8rem;letter-spacing:.3em;margin-bottom:2rem;color:#F4F1EA;">ARETE <span style="color:#7FFF00;">&</span> CO.</div>
-    <input id="login-pw" type="password" placeholder="Password" style="width:100%;background:#111112;border:1px solid #2a2a2b;color:#F4F1EA;padding:.75rem;margin-bottom:1rem;outline:none;font-family:'Space Mono';">
-    <button onclick="checkPass()" style="width:100%;background:#7FFF00;color:#111112;border:none;padding:.75rem;font-weight:700;cursor:pointer;font-family:'Space Mono';">ACCESS CRM</button>
-    <div id="err" style="color:red;font-size:10px;margin-top:10px;"></div>
+<div id="login-screen">
+  <div class="login-box">
+    <div class="lc tl"></div><div class="lc tr"></div><div class="lc bl"></div><div class="lc br"></div>
+    <div class="login-wordmark">ARETE <span>&</span> CO.</div>
+    <div class="login-sub">Client Pipeline — Private Access</div>
+    <label class="login-label">Password</label>
+    <input class="login-input" id="login-pw" type="password" placeholder="Enter your password" onkeydown="if(event.key==='Enter')attemptLogin()">
+    <button class="login-btn" onclick="attemptLogin()">Enter Dashboard</button>
+    <div class="login-error" id="login-error"></div>
   </div>
 </div>
-
-<script>
-  function checkPass() {
-    // Simple secure gate for your personal use
-    if(document.getElementById('login-pw').value === 'AnC2026') {
-        document.getElementById('login-screen').style.display = 'none';
-    } else {
-        document.getElementById('err').innerText = 'ACCESS DENIED';
-    }
-  }
-</script>
 
 <div id="app">
   <header>
@@ -679,7 +671,7 @@
   }
 
   function getClientLink(l) {
-    return window.location.href.replace('arete_crm.html','arete_client.html')+`?token=${l.clientToken}`;
+    return window.location.href.replace('arete_crm.html','arete_crm.html')+`?token=${l.clientToken}`;
   }
 
   function copyClientLink() {

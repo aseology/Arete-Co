@@ -7,30 +7,34 @@
 <link href="https://fonts.googleapis.com/css2?family=Space+Mono:wght@400;700&family=DM+Serif+Display:ital@0;1&display=swap" rel="stylesheet">
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 <style>
-  :root{--charcoal:#1A1A1B;--obsidian:#111112;--linen:#F4F1EA;--linen-dim:#b8b4a8;--moss:#7FFF00;--moss-dim:#5acc00;--dark2:#2a2a2b;--gray:#888580;--red:#ff4d4d;--amber:#ffb347;}
+  :root {
+    --charcoal:#1A1A1B;--obsidian:#111112;--linen:#F4F1EA;
+    --linen-dim:#b8b4a8;--moss:#7FFF00;--moss-dim:#5acc00;
+    --dark2:#2a2a2b;--gray:#888580;--red:#ff4d4d;--amber:#ffb347;
+  }
   *{box-sizing:border-box;margin:0;padding:0;}
   body{background:var(--obsidian);color:var(--linen);font-family:'Space Mono',monospace;min-height:100vh;cursor:crosshair;}
+
   .screen{display:none;min-height:100vh;}
   .screen.active{display:flex;flex-direction:column;}
+
   #screen-loading{align-items:center;justify-content:center;}
   .spinner{width:28px;height:28px;border:2px solid var(--dark2);border-top-color:var(--moss);border-radius:50%;animation:spin .7s linear infinite;margin-bottom:1rem;}
   @keyframes spin{to{transform:rotate(360deg)}}
   .loading-text{font-size:.6rem;letter-spacing:.2em;color:var(--gray);text-transform:uppercase;}
-  #screen-error{align-items:center;justify-content:center;text-align:center;padding:2rem;flex-direction:column;}
-  .err-icon{font-size:2rem;color:var(--red);margin-bottom:1rem;}
-  .err-title{font-family:'DM Serif Display',serif;font-size:1.5rem;color:var(--linen);margin-bottom:.5rem;}
-  .err-sub{font-size:.65rem;color:var(--gray);line-height:1.7;margin-bottom:1.5rem;max-width:380px;}
-  .token-box{width:100%;max-width:380px;text-align:left;}
-  .te-lbl{font-size:.52rem;letter-spacing:.15em;text-transform:uppercase;color:var(--gray);margin-bottom:.45rem;display:block;}
-  .te-inp{width:100%;background:var(--charcoal);border:1px solid var(--dark2);color:var(--linen);font-family:'Space Mono',monospace;font-size:.72rem;padding:.65rem .85rem;outline:none;margin-bottom:.65rem;transition:border-color .2s;}
-  .te-inp:focus{border-color:var(--moss);}
-  .te-btn{width:100%;background:var(--moss);color:var(--obsidian);border:none;font-family:'Space Mono',monospace;font-weight:700;font-size:.6rem;letter-spacing:.15em;text-transform:uppercase;padding:.65rem;cursor:pointer;transition:background .2s;margin-bottom:.5rem;}
-  .te-btn:hover{background:var(--moss-dim);}
-  .te-err{font-size:.6rem;color:var(--red);min-height:1rem;}
+
+  #screen-error{align-items:center;justify-content:center;text-align:center;padding:2rem;}
+  .error-mark{font-size:2rem;color:var(--red);margin-bottom:1rem;}
+  .error-title{font-family:'DM Serif Display',serif;font-size:1.5rem;color:var(--linen);margin-bottom:.5rem;}
+  .error-sub{font-size:.65rem;color:var(--gray);line-height:1.7;}
+
+  /* HEADER */
   .portal-header{background:var(--charcoal);border-bottom:1px solid var(--dark2);padding:0 2rem;display:flex;align-items:center;justify-content:space-between;height:52px;position:sticky;top:0;z-index:10;}
   .logo{font-weight:700;font-size:.75rem;letter-spacing:.25em;}
   .logo span{color:var(--moss);}
   .portal-badge{font-size:.52rem;letter-spacing:.15em;text-transform:uppercase;color:var(--moss);background:rgba(127,255,0,.08);border:1px solid rgba(127,255,0,.2);padding:.25rem .65rem;}
+
+  /* HERO */
   .portal-hero{background:var(--charcoal);border-bottom:1px solid var(--dark2);padding:1.75rem 2rem;}
   .hero-inner{max-width:760px;margin:0 auto;}
   .hero-eyebrow{font-size:.52rem;letter-spacing:.2em;text-transform:uppercase;color:var(--moss);margin-bottom:.5rem;}
@@ -39,51 +43,58 @@
   .hero-meta{display:flex;gap:1.25rem;flex-wrap:wrap;}
   .meta-pill{font-size:.52rem;letter-spacing:.12em;text-transform:uppercase;color:var(--gray);padding:.28rem .65rem;border:1px solid var(--dark2);}
   .meta-pill span{color:var(--linen-dim);}
-  .stage-bar-wrap{background:var(--charcoal);border-bottom:1px solid var(--dark2);padding:1rem 2rem .85rem;}
-  .stage-bar-inner{max-width:760px;margin:0 auto;}
-  .stage-pips{display:flex;gap:3px;margin-bottom:.35rem;}
-  .s-pip{flex:1;height:4px;background:var(--dark2);}
-  .s-pip.done{background:var(--moss);}
-  .s-pip.current{background:var(--amber);}
-  .stage-nms{display:flex;}
-  .s-nm{flex:1;font-size:.44rem;letter-spacing:.1em;text-transform:uppercase;text-align:center;color:var(--gray);}
-  .s-nm.done{color:var(--moss-dim);}
-  .s-nm.current{color:var(--amber);}
-  .portal-tabs{background:var(--charcoal);border-bottom:1px solid var(--dark2);}
-  .tabs-row{max-width:760px;margin:0 auto;padding:0 2rem;display:flex;}
+
+  /* STAGE PROGRESS BAR */
+  .stage-bar-wrap{max-width:760px;margin:0 auto;padding:1rem 2rem .5rem;}
+  .stage-bar{display:flex;gap:3px;}
+  .stage-seg{flex:1;height:4px;background:var(--dark2);transition:background .4s;}
+  .stage-seg.done{background:var(--moss);}
+  .stage-seg.current{background:var(--amber);}
+  .stage-labels{display:flex;margin-top:.3rem;}
+  .stage-lbl{flex:1;font-size:.44rem;letter-spacing:.1em;text-transform:uppercase;text-align:center;color:var(--gray);}
+  .stage-lbl.done{color:var(--moss-dim);}
+  .stage-lbl.current{color:var(--amber);}
+
+  /* TABS */
+  .portal-tabs{border-bottom:1px solid var(--dark2);background:var(--charcoal);}
+  .tabs-inner{max-width:760px;margin:0 auto;padding:0 2rem;display:flex;gap:2px;}
   .ptab{font-family:'Space Mono',monospace;font-size:.58rem;letter-spacing:.12em;text-transform:uppercase;color:var(--gray);padding:.65rem 1.1rem;cursor:pointer;border:none;background:none;border-bottom:2px solid transparent;margin-bottom:-1px;transition:all .2s;white-space:nowrap;}
   .ptab:hover{color:var(--linen-dim);}
   .ptab.active{color:var(--moss);border-bottom-color:var(--moss);}
   .ptab.msg-tab.active{color:var(--amber);border-bottom-color:var(--amber);}
+
+  /* MAIN */
   .portal-main{flex:1;padding:2rem;max-width:760px;margin:0 auto;width:100%;}
   .tab-panel{display:none;}
   .tab-panel.active{display:block;animation:fadeIn .2s ease;}
   @keyframes fadeIn{from{opacity:0;transform:translateY(3px)}to{opacity:1;transform:translateY(0)}}
+
+  /* SECTION LABELS */
   .sec-lbl{font-size:.55rem;letter-spacing:.2em;text-transform:uppercase;color:var(--moss);margin-bottom:.85rem;padding-bottom:.45rem;border-bottom:1px solid var(--dark2);}
   .sec-lbl.amber{color:var(--amber);}
+
+  /* PROJECT PROFILE */
   .profile-grid{display:grid;grid-template-columns:1fr 1fr;gap:.85rem;margin-bottom:1.75rem;}
   .profile-cell{background:var(--charcoal);border:1px solid var(--dark2);padding:.9rem 1.1rem;}
   .pc-lbl{font-size:.5rem;letter-spacing:.15em;text-transform:uppercase;color:var(--gray);margin-bottom:.3rem;}
   .pc-val{font-size:.8rem;color:var(--linen);line-height:1.5;}
   .pc-val.moss{color:var(--moss);font-weight:700;}
   .profile-cell.full{grid-column:1/-1;}
-  .tl-bar{height:4px;background:var(--dark2);margin-bottom:.5rem;}
-  .tl-fill{height:100%;background:var(--moss);transition:width .5s ease;}
-  .tl-lbl{font-size:.55rem;color:var(--gray);margin-bottom:1.25rem;}
-  .tl-lbl span{color:var(--moss);font-weight:700;}
-  .tl-outer{position:relative;}
+
+  /* TIMELINE */
+  .tl-outer{position:relative;padding-left:0;margin-bottom:1.5rem;}
   .tl-track{position:absolute;left:9px;top:6px;bottom:6px;width:1px;background:var(--dark2);}
   .tl-item{display:flex;gap:.85rem;align-items:flex-start;margin-bottom:.85rem;position:relative;}
   .tl-dot{width:19px;height:19px;border-radius:50%;flex-shrink:0;border:2px solid var(--dark2);display:flex;align-items:center;justify-content:center;margin-top:.12rem;background:var(--obsidian);z-index:1;}
   .tl-dot.complete{border-color:var(--moss);background:rgba(127,255,0,.12);}
   .tl-dot.in-progress{border-color:var(--amber);background:rgba(255,179,71,.12);}
-  .tl-pip{width:7px;height:7px;border-radius:50%;background:var(--dark2);}
-  .tl-dot.complete .tl-pip{background:var(--moss);}
-  .tl-dot.in-progress .tl-pip{background:var(--amber);}
+  .tl-dot-pip{width:7px;height:7px;border-radius:50%;background:var(--dark2);}
+  .tl-dot.complete .tl-dot-pip{background:var(--moss);}
+  .tl-dot.in-progress .tl-dot-pip{background:var(--amber);}
   .tl-card{flex:1;background:var(--charcoal);border:1px solid var(--dark2);padding:.65rem .9rem;}
   .tl-card.complete{border-left:3px solid var(--moss);}
   .tl-card.in-progress{border-left:3px solid var(--amber);}
-  .tl-card-top{display:flex;align-items:center;gap:.5rem;flex-wrap:wrap;}
+  .tl-card-top{display:flex;align-items:center;gap:.5rem;flex-wrap:wrap;margin-bottom:.05rem;}
   .tl-title{font-size:.75rem;color:var(--linen);font-weight:700;flex:1;}
   .tl-date{font-size:.52rem;color:var(--gray);}
   .tl-badge{font-size:.46rem;letter-spacing:.1em;text-transform:uppercase;padding:.15rem .4rem;border:1px solid;}
@@ -91,9 +102,15 @@
   .tl-badge.in-progress{color:var(--amber);border-color:rgba(255,179,71,.3);}
   .tl-badge.upcoming{color:var(--gray);border-color:var(--dark2);}
   .tl-note{font-size:.65rem;color:var(--linen-dim);line-height:1.55;margin-top:.3rem;}
-  .tl-empty{font-size:.72rem;color:var(--gray);padding:1.5rem 0;font-style:italic;font-family:'DM Serif Display',serif;}
-  .view-tl-btn{font-family:'Space Mono',monospace;font-size:.52rem;letter-spacing:.1em;text-transform:uppercase;color:var(--moss);background:none;border:1px solid rgba(127,255,0,.2);padding:.4rem .85rem;cursor:pointer;transition:all .2s;margin-top:.75rem;display:inline-block;}
-  .view-tl-btn:hover{background:rgba(127,255,0,.07);}
+  .tl-empty{font-size:.72rem;color:var(--gray);padding:1.5rem 0;font-style:italic;font-family:'DM Serif Display',serif;line-height:1.6;}
+
+  /* PROGRESS SUMMARY */
+  .tl-progress-bar{height:4px;background:var(--dark2);margin-bottom:1.25rem;border-radius:2px;overflow:hidden;}
+  .tl-progress-fill{height:100%;background:var(--moss);transition:width .5s ease;}
+  .tl-progress-label{font-size:.55rem;color:var(--gray);margin-bottom:1rem;}
+  .tl-progress-label span{color:var(--moss);font-weight:700;}
+
+  /* THREAD */
   .thread-intro{font-size:.65rem;color:var(--gray);margin-bottom:1.25rem;line-height:1.65;}
   .comment-thread{display:flex;flex-direction:column;gap:.65rem;margin-bottom:1.5rem;}
   .comment-bubble{padding:.85rem 1rem;border:1px solid var(--dark2);animation:slideIn .2s ease;}
@@ -106,6 +123,8 @@
   .comment-body{font-size:.8rem;color:var(--linen-dim);line-height:1.7;}
   .comment-time{font-size:.5rem;color:var(--gray);margin-top:.4rem;}
   .empty-thread{font-size:.7rem;color:var(--gray);padding:1.5rem 1rem;border:1px dashed var(--dark2);text-align:center;line-height:1.7;font-family:'DM Serif Display',serif;font-style:italic;}
+
+  /* COMPOSE */
   .compose-box{background:var(--charcoal);border:1px solid var(--dark2);border-top:2px solid var(--amber);padding:1.25rem;}
   .compose-label{font-size:.55rem;letter-spacing:.15em;text-transform:uppercase;color:var(--amber);margin-bottom:.75rem;}
   .name-row{display:grid;grid-template-columns:1fr 1fr;gap:.75rem;margin-bottom:.75rem;}
@@ -115,10 +134,11 @@
   .compose-textarea:focus{border-color:var(--amber);}
   .compose-footer{display:flex;align-items:center;justify-content:space-between;}
   .compose-hint{font-size:.55rem;color:var(--gray);line-height:1.5;}
-  .send-btn{background:var(--amber);color:var(--obsidian);border:none;font-family:'Space Mono',monospace;font-weight:700;font-size:.62rem;letter-spacing:.15em;text-transform:uppercase;padding:.65rem 1.5rem;cursor:pointer;transition:background .2s;}
+  .send-btn{background:var(--amber);color:var(--obsidian);border:none;font-family:'Space Mono',monospace;font-weight:700;font-size:.62rem;letter-spacing:.15em;text-transform:uppercase;padding:.65rem 1.5rem;cursor:pointer;transition:background .2s;white-space:nowrap;}
   .send-btn:hover{background:#e09b30;}
   .send-btn:disabled{background:var(--dark2);color:var(--gray);cursor:not-allowed;}
   .send-success{font-size:.65rem;color:var(--moss);margin-top:.75rem;display:none;}
+
   .portal-footer{padding:1.5rem 2rem;border-top:1px solid var(--dark2);display:flex;align-items:center;justify-content:space-between;}
   .footer-brand{font-size:.55rem;letter-spacing:.2em;color:var(--gray);text-transform:uppercase;}
   .footer-brand span{color:var(--moss);}
@@ -133,15 +153,9 @@
 </div>
 
 <div class="screen" id="screen-error">
-  <div class="err-icon" id="err-icon">✕</div>
-  <div class="err-title" id="err-title">Project not found</div>
-  <div class="err-sub" id="err-sub">This link didn't match any active project. Paste your token below or contact Ashley at inquire.aseology@gmail.com</div>
-  <div class="token-box">
-    <label class="te-lbl">Your project token</label>
-    <input class="te-inp" id="token-input" type="text" placeholder="Paste token here..." onkeydown="if(event.key==='Enter')retryToken()">
-    <button class="te-btn" onclick="retryToken()">Access My Portal</button>
-    <div class="te-err" id="token-err"></div>
-  </div>
+  <div class="error-mark">✕</div>
+  <div class="error-title">Link not found</div>
+  <div class="error-sub">This project link is invalid or has expired.<br>Please contact Ashley at inquire.aseology@gmail.com</div>
 </div>
 
 <div class="screen" id="screen-portal">
@@ -156,57 +170,75 @@
       <div class="hero-name" id="p-client-name">—</div>
       <div class="hero-project" id="p-project-name">—</div>
       <div class="hero-meta">
-        <div class="meta-pill">Stage <span id="p-stage-label">—</span></div>
+        <div class="meta-pill">Stage <span id="p-stage">—</span></div>
         <div class="meta-pill">PM <span>Ashley Crockett</span></div>
         <div class="meta-pill">Arete <span>&</span> Co.</div>
       </div>
     </div>
   </div>
 
+  <!-- STAGE PROGRESS -->
   <div class="stage-bar-wrap">
-    <div class="stage-bar-inner">
-      <div class="stage-pips" id="stage-pips"></div>
-      <div class="stage-nms" id="stage-nms"></div>
-    </div>
+    <div class="stage-bar" id="p-stage-bar"></div>
+    <div class="stage-labels" id="p-stage-labels"></div>
   </div>
 
   <div class="portal-tabs">
-    <div class="tabs-row">
-      <button class="ptab active" id="tab-btn-profile" onclick="switchTab('profile',this)">Project Profile</button>
-      <button class="ptab" id="tab-btn-timeline" onclick="switchTab('timeline',this)">Timeline</button>
-      <button class="ptab msg-tab" id="tab-btn-messages" onclick="switchTab('messages',this)">Messages</button>
+    <div class="tabs-inner">
+      <button class="ptab active" onclick="switchTab('profile',this)">Project Profile</button>
+      <button class="ptab" onclick="switchTab('timeline',this)">Timeline</button>
+      <button class="ptab msg-tab" onclick="switchTab('messages',this)">Messages</button>
     </div>
   </div>
 
   <div class="portal-main">
 
+    <!-- TAB: PROFILE -->
     <div class="tab-panel active" id="tab-profile">
       <div class="sec-lbl">Project Overview</div>
       <div class="profile-grid">
-        <div class="profile-cell"><div class="pc-lbl">Client</div><div class="pc-val" id="pp-client">—</div></div>
-        <div class="profile-cell"><div class="pc-lbl">Project</div><div class="pc-val" id="pp-project">—</div></div>
-        <div class="profile-cell"><div class="pc-lbl">Current Stage</div><div class="pc-val moss" id="pp-stage">—</div></div>
-        <div class="profile-cell"><div class="pc-lbl">Project Manager</div><div class="pc-val">Ashley Crockett</div></div>
+        <div class="profile-cell">
+          <div class="pc-lbl">Client</div>
+          <div class="pc-val" id="pp-client">—</div>
+        </div>
+        <div class="profile-cell">
+          <div class="pc-lbl">Project</div>
+          <div class="pc-val" id="pp-project">—</div>
+        </div>
+        <div class="profile-cell">
+          <div class="pc-lbl">Current Stage</div>
+          <div class="pc-val moss" id="pp-stage">—</div>
+        </div>
+        <div class="profile-cell">
+          <div class="pc-lbl">Project Manager</div>
+          <div class="pc-val">Ashley Crockett</div>
+        </div>
         <div class="profile-cell full">
-          <div class="pc-lbl">About This Portal</div>
-          <div class="pc-val" style="font-size:.75rem;color:var(--linen-dim);line-height:1.7;">Use the Messages tab to send questions, revisions, or updates at any time — Ashley is notified immediately. Check the Timeline tab to track where things stand and what's coming next.</div>
+          <div class="pc-lbl">About This Engagement</div>
+          <div class="pc-val" style="font-size:.75rem;color:var(--linen-dim);line-height:1.7;">This portal is your direct line to Ashley throughout the project. Use the Messages tab to send questions, revisions, or updates at any time. Check the Timeline tab to see where things stand and what's coming next.</div>
         </div>
       </div>
+
+      <!-- TIMELINE PREVIEW on Profile tab -->
       <div class="sec-lbl">Timeline Snapshot</div>
       <div id="pp-tl-preview"></div>
-      <button class="view-tl-btn" onclick="switchTab('timeline', document.getElementById('tab-btn-timeline'))">View Full Timeline →</button>
+      <div style="margin-top:.75rem;">
+        <button class="ptab" onclick="switchTab('timeline',document.querySelector('.ptab:nth-child(2)'))" style="font-size:.58rem;letter-spacing:.12em;text-transform:uppercase;color:var(--moss);background:none;border:1px solid rgba(127,255,0,.2);padding:.4rem .85rem;cursor:pointer;transition:all .2s;">View Full Timeline →</button>
+      </div>
     </div>
 
+    <!-- TAB: TIMELINE -->
     <div class="tab-panel" id="tab-timeline">
       <div class="sec-lbl">Project Timeline</div>
-      <div class="tl-bar"><div class="tl-fill" id="tl-fill" style="width:0%"></div></div>
-      <div class="tl-lbl" id="tl-lbl">No milestones yet.</div>
+      <div class="tl-progress-bar"><div class="tl-progress-fill" id="tl-progress-fill" style="width:0%"></div></div>
+      <div class="tl-progress-label" id="tl-progress-label">0 of 0 milestones complete</div>
       <div class="tl-outer">
         <div class="tl-track"></div>
         <div id="p-timeline"></div>
       </div>
     </div>
 
+    <!-- TAB: MESSAGES -->
     <div class="tab-panel" id="tab-messages">
       <div class="sec-lbl amber">Project Thread</div>
       <div class="thread-intro">Send revisions, questions, and updates directly to Ashley. She's notified immediately and will reply here.</div>
@@ -222,13 +254,13 @@
         <textarea class="compose-textarea" id="p-body" placeholder="Describe your revision, question, or update..."></textarea>
         <div class="compose-footer">
           <div class="compose-hint">Ashley will be notified by email<br>and will reply in this thread.</div>
-          <button class="send-btn" id="p-send-btn" onclick="sendComment()">Send Message</button>
+          <button class="send-btn" id="p-send-btn" onclick="sendClientComment()">Send Message</button>
         </div>
         <div class="send-success" id="p-send-success">✓ Message sent — Ashley will follow up shortly.</div>
       </div>
     </div>
 
-  </div>
+  </div><!-- /portal-main -->
 
   <footer class="portal-footer">
     <div class="footer-brand">ARETE <span>&</span> CO. — Build with intention.</div>
@@ -246,161 +278,172 @@
   let currentProject = null;
 
   function show(id) {
-    document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
+    document.querySelectorAll('.screen').forEach(s=>s.classList.remove('active'));
     document.getElementById(id).classList.add('active');
   }
 
   function switchTab(name, btn) {
-    document.querySelectorAll('.ptab').forEach(t => t.classList.remove('active'));
-    if (btn) btn.classList.add('active');
-    document.querySelectorAll('.tab-panel').forEach(p => p.classList.remove('active'));
-    document.getElementById('tab-' + name).classList.add('active');
+    document.querySelectorAll('.ptab').forEach(t=>t.classList.remove('active'));
+    if(btn) btn.classList.add('active');
+    document.querySelectorAll('.tab-panel').forEach(p=>p.classList.remove('active'));
+    document.getElementById('tab-'+name).classList.add('active');
   }
 
+  // ── STAGE BAR ──────────────────────────────────────────────────────────────
   function renderStageBar(stage) {
     const idx = STAGE_ORDER.indexOf(stage);
-    const label = STAGE_LABELS[stage] || stage;
-    document.getElementById('p-stage-label').textContent = label;
-    document.getElementById('pp-stage').textContent = label;
-    document.getElementById('stage-pips').innerHTML = STAGE_ORDER.map((s,i) =>
-      `<div class="s-pip ${i<idx?'done':i===idx?'current':''}"></div>`).join('');
-    document.getElementById('stage-nms').innerHTML = STAGE_ORDER.map((s,i) =>
-      `<div class="s-nm ${i<idx?'done':i===idx?'current':''}">${STAGE_LABELS[s]}</div>`).join('');
+    const bar = document.getElementById('p-stage-bar');
+    const lbls = document.getElementById('p-stage-labels');
+    bar.innerHTML = STAGE_ORDER.map((s,i)=>{
+      const cls = i < idx ? 'done' : i === idx ? 'current' : '';
+      return `<div class="stage-seg ${cls}"></div>`;
+    }).join('');
+    lbls.innerHTML = STAGE_ORDER.map((s,i)=>{
+      const cls = i < idx ? 'done' : i === idx ? 'current' : '';
+      return `<div class="stage-lbl ${cls}">${STAGE_LABELS[s]}</div>`;
+    }).join('');
+    document.getElementById('p-stage').textContent   = STAGE_LABELS[stage]||stage;
+    document.getElementById('pp-stage').textContent  = STAGE_LABELS[stage]||stage;
   }
 
-  function msHTML(ms, compact) {
-    const sc = ms.status==='complete'?'complete':ms.status==='in-progress'?'in-progress':'upcoming';
-    const lbl = sc==='complete'?'Complete ✓':sc==='in-progress'?'In Progress':'Upcoming';
-    return `<div class="tl-item">
-      <div class="tl-dot ${sc}"><div class="tl-pip"></div></div>
-      <div class="tl-card ${sc}">
-        <div class="tl-card-top">
-          <span class="tl-title">${ms.title}</span>
-          <span class="tl-date">${ms.date||''}</span>
-          <span class="tl-badge ${sc}">${lbl}</span>
-        </div>
-        ${ms.note&&!compact?`<div class="tl-note">${ms.note}</div>`:''}
-      </div>
-    </div>`;
-  }
-
-  function renderTimeline(milestones) {
+  // ── TIMELINE ──────────────────────────────────────────────────────────────
+  function renderTimeline(milestones, previewOnly) {
     const sorted = (milestones||[]).slice().sort((a,b)=>(a.date||'9')>(b.date||'9')?1:-1);
-    const total = sorted.length, complete = sorted.filter(m=>m.status==='complete').length;
-    document.getElementById('tl-fill').style.width = total ? Math.round((complete/total)*100)+'%' : '0%';
-    document.getElementById('tl-lbl').innerHTML = total
+    const complete = sorted.filter(m=>m.status==='complete').length;
+    const total    = sorted.length;
+
+    // Progress bar
+    document.getElementById('tl-progress-fill').style.width = total ? Math.round((complete/total)*100)+'%' : '0%';
+    document.getElementById('tl-progress-label').innerHTML  = total
       ? `<span>${complete}</span> of <span>${total}</span> milestones complete`
-      : 'No milestones added yet — check back soon.';
-    document.getElementById('p-timeline').innerHTML = sorted.length
-      ? sorted.map(ms=>msHTML(ms,false)).join('')
-      : '<div class="tl-empty">Your project timeline will appear here as milestones are added.</div>';
+      : 'No milestones added yet.';
+
+    const html = sorted.length ? sorted.map(ms => {
+      const sc = ms.status==='complete'?'complete':ms.status==='in-progress'?'in-progress':'upcoming';
+      const lbl = sc==='complete'?'Complete ✓':sc==='in-progress'?'In Progress':'Upcoming';
+      return `<div class="tl-item">
+        <div class="tl-dot ${sc}"><div class="tl-dot-pip"></div></div>
+        <div class="tl-card ${sc}">
+          <div class="tl-card-top">
+            <span class="tl-title">${ms.title}</span>
+            <span class="tl-date">${ms.date||''}</span>
+            <span class="tl-badge ${sc}">${lbl}</span>
+          </div>
+          ${ms.note?`<div class="tl-note">${ms.note}</div>`:''}
+        </div>
+      </div>`;
+    }).join('') : `<div class="tl-empty">Your project timeline will appear here as milestones are added.</div>`;
+
+    document.getElementById('p-timeline').innerHTML = html;
+
+    // Preview on profile tab (show first 3)
     const preview = sorted.slice(0,3);
-    document.getElementById('pp-tl-preview').innerHTML = preview.length
-      ? `<div class="tl-outer"><div class="tl-track"></div>${preview.map(ms=>msHTML(ms,true)).join('')}</div>`
-      : '<div class="tl-empty" style="padding:.75rem 0 0;">Your project timeline will appear here once Ashley adds milestones.</div>';
+    const previewHtml = preview.length ? `<div class="tl-outer" style="margin-bottom:0"><div class="tl-track"></div>${
+      preview.map(ms => {
+        const sc = ms.status==='complete'?'complete':ms.status==='in-progress'?'in-progress':'upcoming';
+        const lbl = sc==='complete'?'Complete ✓':sc==='in-progress'?'In Progress':'Upcoming';
+        return `<div class="tl-item">
+          <div class="tl-dot ${sc}"><div class="tl-dot-pip"></div></div>
+          <div class="tl-card ${sc}">
+            <div class="tl-card-top">
+              <span class="tl-title">${ms.title}</span>
+              <span class="tl-date">${ms.date||''}</span>
+              <span class="tl-badge ${sc}">${lbl}</span>
+            </div>
+            ${ms.note?`<div class="tl-note">${ms.note}</div>`:''}
+          </div>
+        </div>`;
+      }).join('')
+    }</div>` : `<div class="tl-empty">Your project timeline will appear here once Ashley adds milestones.</div>`;
+    document.getElementById('pp-tl-preview').innerHTML = previewHtml;
   }
 
+  // ── COMMENTS ──────────────────────────────────────────────────────────────
   function commentHTML(c) {
     const time = new Date(c.created_at).toLocaleString('en-US',{month:'short',day:'numeric',hour:'numeric',minute:'2-digit'});
+    const label = c.role==='ashley' ? 'Ashley — Arete & Co.' : c.author;
     return `<div class="comment-bubble ${c.role}">
-      <div class="comment-author">${c.role==='ashley'?'Ashley — Arete & Co.':c.author}</div>
+      <div class="comment-author">${label}</div>
       <div class="comment-body">${c.body.replace(/\n/g,'<br>')}</div>
       <div class="comment-time">${time}</div>
     </div>`;
   }
 
   function renderThread(comments) {
-    const el = document.getElementById('p-thread');
-    if (!comments.length) { el.innerHTML = '<div class="empty-thread">No messages yet. Send your first update below.</div>'; return; }
-    el.innerHTML = comments.map(commentHTML).join('');
-    el.scrollTop = el.scrollHeight;
+    const thread = document.getElementById('p-thread');
+    if (!comments.length) {
+      thread.innerHTML = '<div class="empty-thread">No messages yet. Send your first update below.</div>';
+      return;
+    }
+    thread.innerHTML = comments.map(commentHTML).join('');
+    thread.scrollTop = thread.scrollHeight;
   }
 
-  async function sendComment() {
-    const author = document.getElementById('p-author').value.trim()||'Client';
+  async function sendClientComment() {
+    const author = document.getElementById('p-author').value.trim() || 'Client';
     const body   = document.getElementById('p-body').value.trim();
     if (!body) { document.getElementById('p-body').style.borderColor='var(--red)'; return; }
     document.getElementById('p-body').style.borderColor='';
     const btn = document.getElementById('p-send-btn');
     btn.disabled=true; btn.textContent='Sending...';
-    const {error} = await sb.from('comments').insert({project_id:currentProject.id,author,role:'client',body});
+    const {error} = await sb.from('comments').insert({
+      project_id: currentProject.id, author, role:'client', body,
+    });
     btn.disabled=false; btn.textContent='Send Message';
     if (error) { alert('Could not send. Please try again.'); return; }
     document.getElementById('p-body').value='';
-    const ok=document.getElementById('p-send-success');
-    ok.style.display='block';
-    setTimeout(()=>ok.style.display='none',4000);
+    const success=document.getElementById('p-send-success');
+    success.style.display='block';
+    setTimeout(()=>success.style.display='none',4000);
   }
 
-  async function loadPortal(token) {
-    show('screen-loading');
-    document.getElementById('token-err').textContent='';
-    let projects, err;
-    try {
-      const res = await sb.from('projects').select('*').eq('client_token',token).limit(1);
-      projects=res.data; err=res.error;
-    } catch(e) { err=e; }
+  // ── INIT ──────────────────────────────────────────────────────────────────
+  async function init() {
+    const params = new URLSearchParams(window.location.search);
+    const token  = params.get('token');
+    if (!token) { show('screen-error'); return; }
 
-    if (err||!projects?.length) {
-      document.getElementById('err-title').textContent = 'Project not found';
-      document.getElementById('err-sub').textContent = err
-        ? 'Connection error — check your internet and try again.'
-        : 'This token didn\'t match any active project. Check the link Ashley sent you.';
-      show('screen-error'); return;
-    }
-
+    const {data:projects,error} = await sb.from('projects').select('*').eq('client_token',token).limit(1);
+    if (error||!projects?.length) { show('screen-error'); return; }
     currentProject = projects[0];
+
+    // Populate hero & profile
     document.getElementById('p-client-name').textContent  = currentProject.name;
     document.getElementById('p-project-name').textContent = currentProject.project_name||'';
     document.getElementById('pp-client').textContent      = currentProject.name;
     document.getElementById('pp-project').textContent     = currentProject.project_name||'—';
-    document.getElementById('p-author').value             = (currentProject.name||'').split(' ')[0];
+    document.getElementById('p-author').value             = currentProject.name.split(' ')[0];
 
     renderStageBar(currentProject.stage||'lead');
     renderTimeline(currentProject.milestones||[]);
 
+    // Load comments
     const {data:comments} = await sb.from('comments').select('*')
       .eq('project_id',currentProject.id).order('created_at',{ascending:true});
     renderThread(comments||[]);
 
-    sb.channel('portal-comments-'+currentProject.id)
+    // Real-time: new comments
+    sb.channel(`client-${currentProject.id}`)
       .on('postgres_changes',{event:'INSERT',schema:'public',table:'comments',filter:`project_id=eq.${currentProject.id}`},
         payload=>{
-          const el=document.getElementById('p-thread');
-          const empty=el.querySelector('.empty-thread');
-          if(empty) el.innerHTML='';
-          el.insertAdjacentHTML('beforeend',commentHTML(payload.new));
-          el.scrollTop=el.scrollHeight;
+          const thread=document.getElementById('p-thread');
+          const empty=thread.querySelector('.empty-thread');
+          if(empty) thread.innerHTML='';
+          thread.insertAdjacentHTML('beforeend',commentHTML(payload.new));
+          thread.scrollTop=thread.scrollHeight;
         }).subscribe();
 
-    sb.channel('portal-project-'+currentProject.id)
+    // Real-time: timeline / project updates
+    sb.channel(`project-${currentProject.id}`)
       .on('postgres_changes',{event:'UPDATE',schema:'public',table:'projects',filter:`id=eq.${currentProject.id}`},
         payload=>{
-          currentProject=payload.new;
-          renderStageBar(payload.new.stage||'lead');
-          renderTimeline(payload.new.milestones||[]);
+          const p = payload.new;
+          currentProject = p;
+          renderStageBar(p.stage||'lead');
+          renderTimeline(p.milestones||[]);
         }).subscribe();
 
     show('screen-portal');
-  }
-
-  async function retryToken() {
-    const t = document.getElementById('token-input').value.trim();
-    if (!t) { document.getElementById('token-err').textContent='Please paste your project token.'; return; }
-    document.getElementById('token-err').textContent='Looking up your project...';
-    await loadPortal(t);
-  }
-
-  async function init() {
-    const token = new URLSearchParams(window.location.search).get('token');
-    if (!token) {
-      document.getElementById('err-icon').textContent='⬡';
-      document.getElementById('err-icon').style.color='var(--moss)';
-      document.getElementById('err-title').textContent='Enter your project token';
-      document.getElementById('err-sub').textContent='Your link should include a token. You can also paste it directly below.';
-      show('screen-error'); return;
-    }
-    await loadPortal(token);
   }
 
   init();
