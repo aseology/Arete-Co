@@ -1,6 +1,14 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
+<script>
+(function(){
+  if(localStorage.getItem('arete_ops_auth')!=='true'){
+    window.location.href='arete_ops.html';
+  }
+})();
+</script>
+
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Arete & Co. — Expense Tracker</title>

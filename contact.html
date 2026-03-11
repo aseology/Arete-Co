@@ -2,7 +2,11 @@
 <html lang="en">
 <head>
 <meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1.0">
-<title>Contact — The Structured Creative</title>
+<title>Contact — Arete &amp; Co.</title>
+<meta name="description" content="Get in touch with Arete &amp; Co. Start a consultation or ask a question — no pitch required.">
+<meta property="og:title" content="Contact — Arete &amp; Co.">
+<meta property="og:description" content="Start a consultation or ask a question. No pitch required — just the honest version.">
+<meta property="og:type" content="website">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <style>
@@ -202,7 +206,7 @@ footer{padding:2.5rem 3.5rem;background:var(--obsidian);border-top:1px solid var
           <div class="fc-meta"><div class="fc-label">GitHub</div><div class="fc-value">github.com/aseology</div></div>
           <span class="fc-arrow">→</span>
         </a>
-        <a href="#" target="_blank" rel="noopener" class="float-card reveal d4">
+        <a href="https://ac-portfolio-snowy.vercel.app" target="_blank" rel="noopener" class="float-card reveal d4">
           <div class="fc-icon">↗</div>
           <div class="fc-meta"><div class="fc-label">Portfolio</div><div class="fc-value">View Selected Work</div></div>
           <span class="fc-arrow">→</span>
@@ -340,11 +344,51 @@ document.querySelectorAll('.counter').forEach(el=>{
   },{threshold:.5}).observe(el);
 });
 
-function submitContact(){
-  const fields=[document.getElementById('cfName'),document.getElementById('cfEmail'),document.getElementById('cfMsg')];
-  let ok=true;
-  fields.forEach(f=>{if(!f||!f.value.trim()){if(f)f.style.borderColor='rgba(127,255,0,.5)';setTimeout(()=>{if(f)f.style.borderColor=''},2200);ok=false}});
-  if(!ok)return;
-  const form=document.getElementById('contactForm');
-  form.style.transition='opacity .5s';form.style.opacity='0';
-  setTimeout(
+const EDGE_URL = 'https://etsztcmmyhephvrrdpyp.supabase.co/functions/v1/send-form';
+
+async function submitContact(){
+  const nameEl  = document.getElementById('cfName');
+  const emailEl = document.getElementById('cfEmail');
+  const projEl  = document.getElementById('cfProject');
+  const msgEl   = document.getElementById('cfMsg');
+  const fields  = [nameEl, emailEl, msgEl];
+  let ok = true;
+  fields.forEach(f => {
+    if (!f || !f.value.trim()) {
+      if (f) { f.style.borderColor = 'rgba(127,255,0,.5)'; setTimeout(() => { if(f) f.style.borderColor = ''; }, 2200); }
+      ok = false;
+    }
+  });
+  if (!ok) return;
+  const btn = document.querySelector('#contactForm .btn-moss');
+  if (btn) { btn.style.opacity = '.5'; btn.style.pointerEvents = 'none'; btn.querySelector('span').textContent = 'Sending...'; }
+  try {
+    const res = await fetch(EDGE_URL, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json', 'apikey': 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImV0c3p0Y21teWhlcGh2cnJkcHlwIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzI3NDAxNzYsImV4cCI6MjA4ODMxNjE3Nn0.1bT6mjYxep88pnibQyyWikg2HtTUF8at5NGPXB3VmzI', 'Authorization': 'Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImV0c3p0Y21teWhlcGh2cnJkcHlwIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzI3NDAxNzYsImV4cCI6MjA4ODMxNjE3Nn0.1bT6mjYxep88pnibQyyWikg2HtTUF8at5NGPXB3VmzI' },
+      body: JSON.stringify({
+        formType: 'contact',
+        name:     nameEl.value.trim(),
+        email:    emailEl.value.trim(),
+        project:  projEl ? projEl.value.trim() : '',
+        message:  msgEl.value.trim(),
+      })
+    });
+    if (!res.ok) throw new Error('Server error');
+    const form = document.getElementById('contactForm');
+    form.style.transition = 'opacity .5s';
+    form.style.opacity = '0';
+    setTimeout(() => {
+      form.style.display = 'none';
+      const s = document.getElementById('contactSuccess');
+      if (s) { s.classList.add('visible'); s.style.opacity='0'; s.style.transition='opacity .6s'; window.scrollTo({top: s.offsetTop - 100, behavior:'smooth'}); requestAnimationFrame(() => s.style.opacity='1'); }
+    }, 500);
+  } catch(err) {
+    console.error(err);
+    if (btn) { btn.style.opacity = '1'; btn.style.pointerEvents = ''; btn.querySelector('span').textContent = 'Send The Message'; }
+    alert('Something went wrong. Please email ask@aretebuilds.com directly.');
+  }
+}
+</script>
+</body>
+</html>

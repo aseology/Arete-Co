@@ -3,6 +3,10 @@
 <head>
 <meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1.0">
 <title>The Foundation Brief — Arete &amp; Co.</title>
+<meta name="description" content="Start your consultation with Arete &amp; Co. The Foundation Brief captures your vision, goals, and raw materials in one place.">
+<meta property="og:title" content="The Foundation Brief — Arete &amp; Co.">
+<meta property="og:description" content="Define intent before materials. The first step toward building something that lasts.">
+<meta property="og:type" content="website">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <style>
@@ -322,24 +326,45 @@ secs.forEach((id,i)=>{
     }
   },{rootMargin:'-30% 0px -50% 0px'}).observe(el);
 });
-function submitBrief(){
-  const tas=document.querySelectorAll('.btextarea');
-  let filled=0;
-  tas.forEach(t=>{if(t.value.trim())filled++});
-  if(filled<4){
-    tas.forEach(t=>{if(!t.value.trim()){t.style.borderColor='rgba(127,255,0,.5)';setTimeout(()=>t.style.borderColor='',2000)}});
-    for(const t of tas){if(!t.value.trim()){t.scrollIntoView({behavior:'smooth',block:'center'});t.focus();break}}
+const EDGE_URL = 'https://etsztcmmyhephvrrdpyp.supabase.co/functions/v1/send-form';
+
+async function submitBrief(){
+  const tas = Array.from(document.querySelectorAll('.btextarea'));
+  let filled = 0;
+  tas.forEach(t => { if(t.value.trim()) filled++; });
+  if(filled < 4){
+    tas.forEach(t => {
+      if(!t.value.trim()){ t.style.borderColor='rgba(127,255,0,.5)'; setTimeout(()=>t.style.borderColor='',2000); }
+    });
+    for(const t of tas){ if(!t.value.trim()){ t.scrollIntoView({behavior:'smooth',block:'center'}); t.focus(); break; } }
     return;
   }
-  const f=document.getElementById('briefForm');
-  f.style.transition='opacity .5s';f.style.opacity='0';
-  setTimeout(()=>{
-    f.style.display='none';
-    const s=document.getElementById('briefSuccess');
-    s.classList.add('visible');s.style.opacity='0';s.style.transition='opacity .6s';
-    window.scrollTo({top:s.offsetTop-100,behavior:'smooth'});
-    requestAnimationFrame(()=>s.style.opacity='1');
-  },500);
+  const btn = document.querySelector('#briefForm .btn-moss');
+  if(btn){ btn.style.opacity='.5'; btn.style.pointerEvents='none'; btn.querySelector('span').textContent='Sending...'; }
+  const fieldNames = ['team','mission','audience','challenge','successMetrics','financialGoals','resources','timeline'];
+  const payload = { formType: 'brief' };
+  tas.forEach((t, i) => { if(fieldNames[i]) payload[fieldNames[i]] = t.value.trim(); });
+  try {
+    const res = await fetch(EDGE_URL, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json', 'apikey': 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImV0c3p0Y21teWhlcGh2cnJkcHlwIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzI3NDAxNzYsImV4cCI6MjA4ODMxNjE3Nn0.1bT6mjYxep88pnibQyyWikg2HtTUF8at5NGPXB3VmzI', 'Authorization': 'Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImV0c3p0Y21teWhlcGh2cnJkcHlwIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzI3NDAxNzYsImV4cCI6MjA4ODMxNjE3Nn0.1bT6mjYxep88pnibQyyWikg2HtTUF8at5NGPXB3VmzI' },
+      body: JSON.stringify(payload)
+    });
+    if(!res.ok) throw new Error('Server error');
+    const f = document.getElementById('briefForm');
+    f.style.transition='opacity .5s'; f.style.opacity='0';
+    setTimeout(()=>{
+      f.style.display='none';
+      const s = document.getElementById('briefSuccess');
+      s.classList.add('visible'); s.style.opacity='0'; s.style.transition='opacity .6s';
+      window.scrollTo({top: s.offsetTop-100, behavior:'smooth'});
+      requestAnimationFrame(()=>s.style.opacity='1');
+    },500);
+  } catch(err){
+    console.error(err);
+    if(btn){ btn.style.opacity='1'; btn.style.pointerEvents=''; btn.querySelector('span').textContent='Submit The Brief'; }
+    alert('Something went wrong. Please email ask@aretebuilds.com directly.');
+  }
 }
 </script>
 </body>
