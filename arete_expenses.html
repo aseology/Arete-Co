@@ -3,7 +3,7 @@
 <head>
 <script>
 (function(){
-  if(localStorage.getItem('arete_ops_auth')!=='true'){
+  if(sessionStorage.getItem('arete_ops_auth')!=='true'){
     window.location.href='arete_ops.html';
   }
 })();
@@ -13,6 +13,7 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Arete & Co. — Expense Tracker</title>
 <link href="https://fonts.googleapis.com/css2?family=Space+Mono:wght@400;700&family=DM+Serif+Display:ital@0;1&display=swap" rel="stylesheet">
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 <style>
   :root {
     --charcoal:#1A1A1B;--obsidian:#111112;--linen:#F4F1EA;
@@ -269,31 +270,59 @@ const CAT_COLORS = {
 };
 const MONTHS = ['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'];
 
-let expenses = JSON.parse(localStorage.getItem('arete_expenses_v1') || '[]');
+const SUPABASE_URL = 'https://etsztcmmyhephvrrdpyp.supabase.co';
+const SUPABASE_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImV0c3p0Y21teWhlcGh2cnJkcHlwIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzI3NDAxNzYsImV4cCI6MjA4ODMxNjE3Nn0.1bT6mjYxep88pnibQyyWikg2HtTUF8at5NGPXB3VmzI';
+const sb = supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
+
+let expenses = [];
 let editId = null;
 let sortCol = 'date';
 let sortDir = -1;
 let filterCat = 'all';
 let filterDeduct = 'all';
 
-// Seed data
-if (!expenses.length) {
-  expenses = [
-    {id:'e1',date:'2026-01-05',vendor:'Notion',category:'Software & Tools',amount:16,deductible:true,notes:'Annual plan',method:'Business Card'},
-    {id:'e2',date:'2026-01-12',vendor:'Adobe Creative Cloud',category:'Software & Tools',amount:54.99,deductible:true,notes:'Monthly subscription',method:'Business Card'},
-    {id:'e3',date:'2026-01-20',vendor:'Canva Pro',category:'Software & Tools',amount:12.99,deductible:true,notes:'Design tools',method:'Business Card'},
-    {id:'e4',date:'2026-02-03',vendor:'WeWork Day Pass',category:'Office & Supplies',amount:35,deductible:true,notes:'Client meeting space',method:'Personal Card'},
-    {id:'e5',date:'2026-02-14',vendor:'Lunch w/ Marcus Webb',category:'Meals & Entertainment',amount:48.50,deductible:true,notes:'Discovery meeting — Community app MVP',method:'Personal Card'},
-    {id:'e6',date:'2026-02-22',vendor:'Fiverr',category:'Professional Services',amount:75,deductible:true,notes:'Logo revisions',method:'Business Card'},
-    {id:'e7',date:'2026-03-01',vendor:'Google Workspace',category:'Subscriptions',amount:12,deductible:true,notes:'Business email',method:'Business Card'},
-    {id:'e8',date:'2026-03-04',vendor:'Uber',category:'Travel & Transportation',amount:22.40,deductible:true,notes:'Client site visit',method:'Personal Card'},
-  ];
-  save();
+// ── SUPABASE PERSISTENCE ──────────────────────────────
+async function loadExpenses() {
+  // Show loading state
+  document.getElementById('empty-state').style.display = 'none';
+  document.getElementById('expense-tbody').innerHTML =
+    '<tr><td colspan="7" style="text-align:center;color:var(--gray);padding:2rem;letter-spacing:.1em;font-size:.65rem;">LOADING...</td></tr>';
+
+  const { data, error } = await sb
+    .from('expenses')
+    .select('*')
+    .order('date', { ascending: false });
+
+  if (error) { console.error('Load error:', error); expenses = []; }
+  else expenses = (data || []).map(r => ({
+    id: r.id, date: r.date, vendor: r.vendor,
+    category: r.category, amount: Number(r.amount),
+    deductible: r.deductible, notes: r.notes || '',
+    method: r.method || 'Business Card',
+  }));
+  render();
 }
 
-function save() {
-  localStorage.setItem('arete_expenses_v1', JSON.stringify(expenses));
+async function save(expense) {
+  const row = {
+    id: expense.id, date: expense.date, vendor: expense.vendor,
+    category: expense.category, amount: expense.amount,
+    deductible: expense.deductible, notes: expense.notes || null,
+    method: expense.method || null,
+  };
+  const { error } = await sb.from('expenses').upsert(row, { onConflict: 'id' });
+  if (error) console.error('Save error:', error);
 }
+
+async function deleteExpense() {
+  if (!editId) return;
+  const { error } = await sb.from('expenses').delete().eq('id', editId);
+  if (error) { console.error('Delete error:', error); return; }
+  expenses = expenses.filter(x => x.id !== editId);
+  closeModal();
+  render();
+}
+// ─────────────────────────────────────────────────────
 
 function fmt(n) { return '$' + Number(n).toLocaleString('en-US', {minimumFractionDigits:2,maximumFractionDigits:2}); }
 function genId() { return 'e' + Date.now(); }
@@ -464,7 +493,7 @@ function openEdit(id) {
   document.getElementById('modal').classList.add('open');
 }
 
-function saveExpense() {
+async function saveExpense() {
   const vendor = document.getElementById('f-vendor').value.trim();
   const amount = parseFloat(document.getElementById('f-amount').value);
   if (!vendor || isNaN(amount)) {
@@ -492,15 +521,7 @@ function saveExpense() {
   } else {
     expenses.push(data);
   }
-  save();
-  closeModal();
-  render();
-}
-
-function deleteExpense() {
-  if (!editId) return;
-  expenses = expenses.filter(x => x.id !== editId);
-  save();
+  await save(data);
   closeModal();
   render();
 }
@@ -541,7 +562,8 @@ document.getElementById('modal').addEventListener('click', e => {
   if (e.target === document.getElementById('modal')) closeModal();
 });
 
-render();
+// Boot — load from Supabase
+loadExpenses();
 </script>
 </body>
 </html>

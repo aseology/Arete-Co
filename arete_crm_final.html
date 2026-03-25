@@ -6,6 +6,7 @@
 <title>Arete & Co. — Client Pipeline</title>
 <link href="https://fonts.googleapis.com/css2?family=Space+Mono:wght@400;700&family=DM+Serif+Display:ital@0;1&display=swap" rel="stylesheet">
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
 <style>
   :root {
     --charcoal:#1A1A1B;--obsidian:#111112;--linen:#F4F1EA;
@@ -177,6 +178,13 @@
   .modal-section{font-size:.55rem;letter-spacing:.2em;text-transform:uppercase;color:var(--moss);margin:1.25rem 0 .75rem;padding-top:1rem;border-top:1px solid var(--dark2);}
 
   /* OFFBOARD */
+  /* GENERATE DOCS */
+  .doc-gen-row{display:flex;gap:.5rem;flex-wrap:wrap;margin-top:.35rem;}
+  .doc-btn{font-family:'Space Mono',monospace;font-size:.55rem;letter-spacing:.1em;text-transform:uppercase;padding:.45rem 1rem;border:1px solid var(--dark2);background:var(--obsidian);color:var(--linen-dim);cursor:pointer;transition:all .2s;display:flex;align-items:center;gap:.4rem;}
+  .doc-btn:hover{border-color:var(--moss);color:var(--moss);}
+  .doc-btn.generating{opacity:.5;pointer-events:none;}
+  .doc-btn.done{border-color:var(--moss);color:var(--moss);}
+  /* OFFBOARD */
   .progress-bar-wrap{height:3px;background:var(--dark2);margin-bottom:1.5rem;overflow:hidden;}
   .progress-bar-fill{height:100%;background:var(--moss);transition:width .4s ease;}
   .checklist{display:flex;flex-direction:column;gap:.5rem;margin-bottom:1.5rem;}
@@ -344,6 +352,14 @@
       <div class="client-link-label">Share this link with your client</div>
       <div class="client-link-url" id="d-client-link">—</div>
       <button class="copy-btn" id="d-copy-btn" onclick="copyClientLink()">Copy Link</button>
+    </div>
+
+    <!-- GENERATE DOCUMENTS -->
+    <div class="modal-section">Generate Documents</div>
+    <div class="doc-gen-row">
+      <button class="doc-btn" id="btn-gen-sa" onclick="generateDoc('sa')"><span style="font-size:.75rem;">◈</span> Service Agreement</button>
+      <button class="doc-btn" id="btn-gen-inv" onclick="generateDoc('invoice')"><span style="font-size:.75rem;">$</span> Invoice</button>
+      <button class="doc-btn" id="btn-gen-nda" onclick="generateDoc('nda')"><span style="font-size:.75rem;">⬡</span> NDA</button>
     </div>
 
     <!-- COMMENT THREAD -->
@@ -761,6 +777,107 @@
 
   // Boot — load all leads from Supabase on startup
   loadLeads();
+
+  // ── PDF GENERATION ────────────────────────────────────────────────────────
+  const PDF={navy:[26,60,94],gold:[196,149,106],light:[234,242,248],dark:[44,44,44],mid:[107,107,107],white:[255,255,255],border:[212,208,202]};
+  function pdfHeader(doc,title){doc.setFillColor(...PDF.navy);doc.rect(0,0,216,26,'F');doc.setFont('helvetica','bold');doc.setFontSize(9);doc.setTextColor(...PDF.white);doc.text('ARETE & CO.',14,10);doc.setFont('helvetica','normal');doc.setFontSize(7.5);doc.setTextColor(170,204,221);doc.text('\u00b7  '+title,46,10);doc.setDrawColor(...PDF.gold);doc.setLineWidth(0.8);doc.line(0,26,216,26);return 36;}
+  function pdfFooter(doc,pg,tot){doc.setDrawColor(...PDF.border);doc.setLineWidth(0.3);doc.line(14,281,202,281);doc.setFont('helvetica','normal');doc.setFontSize(7);doc.setTextColor(...PDF.mid);doc.text('Confidential  \u00b7  Arete & Co.  \u00b7  aretebuilds.com',14,286);doc.text(`Page ${pg} of ${tot}`,202,286,{align:'right'});}
+  function pdfSH(doc,num,title,y){doc.setFillColor(...PDF.navy);doc.rect(14,y,8,8,'F');doc.setFont('helvetica','bold');doc.setFontSize(7);doc.setTextColor(...PDF.white);doc.text(num,18,y+5.5,{align:'center'});doc.setFillColor(...PDF.light);doc.rect(22,y,180,8,'F');doc.setFont('helvetica','bold');doc.setFontSize(8);doc.setTextColor(...PDF.navy);doc.text(title.toUpperCase(),26,y+5.5);return y+13;}
+  function pdfT(doc,text,x,y,o={}){doc.setFont('helvetica',o.bold?'bold':o.italic?'italic':'normal');doc.setFontSize(o.sz||9);doc.setTextColor(...(o.clr||PDF.dark));const ls=doc.splitTextToSize(text,o.w||184);doc.text(ls,x,y);return y+ls.length*(o.lh||5)+(o.gap||3);}
+  function pdfBlt(doc,text,x,y){doc.setFillColor(...PDF.gold);doc.circle(x+1.5,y-1.5,1,'F');doc.setFont('helvetica','normal');doc.setFontSize(9);doc.setTextColor(...PDF.dark);const ls=doc.splitTextToSize(text,172);doc.text(ls,x+5,y);return y+ls.length*5+2;}
+  function pdfBox(doc,label,value,x,y,w){doc.setFillColor(...PDF.light);doc.rect(x,y,w,13,'F');doc.setDrawColor(...PDF.border);doc.setLineWidth(0.2);doc.rect(x,y,w,13,'S');doc.setFont('helvetica','bold');doc.setFontSize(6.5);doc.setTextColor(...PDF.mid);doc.text(label.toUpperCase(),x+3,y+4.5);doc.setFont('helvetica','normal');doc.setFontSize(8.5);doc.setTextColor(...PDF.dark);doc.text(String(value||'—').substring(0,40),x+3,y+10);}
+  function pdfTH(doc,cols,y){doc.setFillColor(...PDF.navy);doc.rect(14,y,188,8,'F');let x=14;cols.forEach(c=>{doc.setFont('helvetica','bold');doc.setFontSize(7);doc.setTextColor(...PDF.white);doc.text(c.label.toUpperCase(),x+3,y+5.5);x+=c.w;});return y+8;}
+  function pdfTR(doc,cols,y,shade){const rh=Math.max(...cols.map(c=>doc.splitTextToSize(c.text||'',c.w-6).length*4.5+5),9);if(shade){doc.setFillColor(...PDF.light);doc.rect(14,y,188,rh,'F');}doc.setDrawColor(...PDF.border);doc.setLineWidth(0.2);let x=14;cols.forEach(c=>{doc.rect(x,y,c.w,rh,'S');doc.setFont('helvetica',c.bold?'bold':'normal');doc.setFontSize(c.sz||8.5);doc.setTextColor(...(c.clr||PDF.dark));const ls=doc.splitTextToSize(c.text||'',c.w-6);doc.text(ls,x+(c.right?c.w-3:3),y+5.5,{align:c.right?'right':'left'});x+=c.w;});return y+rh;}
+  function pdfSig(doc,y){[{l:'CLIENT',x:14,w:91,n:'___________________________',ti:'___________________________'},{l:'ARETE & CO.',x:109,w:93,n:'Ashley Crockett',ti:'Developer & Project Manager'}].forEach(p=>{doc.setFillColor(...PDF.navy);doc.rect(p.x,y,p.w,7,'F');doc.setFont('helvetica','bold');doc.setFontSize(7);doc.setTextColor(...PDF.white);doc.text(p.l,p.x+3,y+5);});y+=7;[{x:14,w:91},{x:109,w:93}].forEach(p=>{doc.setDrawColor(...PDF.border);doc.setLineWidth(0.2);doc.rect(p.x,y,p.w,38,'S');});const vals=[['___________________________','___________________________'],['___________________________','Ashley Crockett'],['___________________________','Developer & Project Manager'],['___________________________','___________________________']];['Signature:','Printed Name:','Title:','Date:'].forEach((l,i)=>{doc.setFont('helvetica','bold');doc.setFontSize(7.5);doc.setTextColor(...PDF.mid);doc.text(l,17,y+6+i*9);doc.text(l,112,y+6+i*9);doc.setFont('helvetica','normal');doc.setTextColor(...PDF.dark);doc.text(vals[i][0],17,y+10+i*9);doc.text(vals[i][1],112,y+10+i*9);});return y+42;}
+
+  async function generateDoc(type){
+    const l=leads.find(x=>x.id===currentDetailId);if(!l)return;
+    const bmap={sa:'btn-gen-sa',invoice:'btn-gen-inv',nda:'btn-gen-nda'};
+    const btn=document.getElementById(bmap[type]);const orig=btn.innerHTML;
+    btn.classList.add('generating');btn.innerHTML='⟳ Generating...';
+    const {jsPDF}=window.jspdf;const doc=new jsPDF({unit:'mm',format:'letter'});
+    const today=new Date().toLocaleDateString('en-US',{month:'long',day:'numeric',year:'numeric'});
+    const unpaid=(l.installments||[]).filter(i=>!i.paid);
+    const unpaidTotal=unpaid.reduce((s,i)=>s+i.amount,0);
+    const paidTotal=(l.installments||[]).filter(i=>i.paid).reduce((s,i)=>s+i.amount,0);
+
+    if(type==='sa'){
+      let y=pdfHeader(doc,'Service Agreement');
+      doc.setFont('helvetica','bold');doc.setFontSize(17);doc.setTextColor(...PDF.navy);doc.text('SERVICE AGREEMENT',108,y+7,{align:'center'});y+=13;
+      doc.setFont('helvetica','normal');doc.setFontSize(8.5);doc.setTextColor(...PDF.mid);doc.text(`${l.name}  \u00b7  ${l.project||''}  \u00b7  ${today}`,108,y+2,{align:'center'});y+=11;
+      pdfBox(doc,'Service Provider','Ashley Crockett / Arete & Co.',14,y,91);pdfBox(doc,'Client',l.name,109,y,93);y+=18;
+      pdfBox(doc,'Project',l.project||'—',14,y,91);pdfBox(doc,'Effective Date',today,109,y,93);y+=20;
+      y=pdfSH(doc,'01','Scope of Work',y);
+      y=pdfT(doc,`Arete & Co. agrees to design and develop the ${l.project||'project'} for ${l.name} in accordance with the agreed deliverables and phase breakdown outlined in the Scope of Work document incorporated herein by reference.`,14,y,{w:188,gap:4});
+      y=pdfSH(doc,'02','Payment Terms',y);
+      y=pdfTH(doc,[{label:'Milestone',w:70},{label:'Deliverable',w:82},{label:'Amount',w:36}],y);
+      const rows=(l.installments&&l.installments.length)?l.installments.map((inst,i)=>({m:inst.label,d:['Scope lock, wireframes, prototype','Core app — internal testing only','QA, App Store submission, go-live'][i]||'See SOW',a:'$'+inst.amount.toLocaleString()})):[{m:'Phase 1',d:'Scope lock & prototype',a:'$500'},{m:'Phase 2',d:'Core app',a:'$1,000'},{m:'Phase 3',d:'Launch',a:'$1,000'}];
+      rows.forEach((r,i)=>{y=pdfTR(doc,[{text:r.m,w:70,bold:true},{text:r.d,w:82},{text:r.a,w:36,bold:true,clr:PDF.navy,right:true}],y,i%2===0);});
+      y+=4;y=pdfT(doc,'Work continues between milestones. Deliverables held until corresponding payment clears. Client pays to receive a phase, not to start it.',14,y,{italic:true,clr:PDF.mid,w:188,gap:4});
+      y=pdfSH(doc,'03','Timeline',y);y=pdfT(doc,`Estimated [X] months from deposit date (${today}). Subject to adjustment based on feedback, scope changes, and payment cadence.`,14,y,{w:188,gap:4});
+      y=pdfSH(doc,'04','Intellectual Property',y);y=pdfT(doc,'Upon full payment, the Client owns all work product, code, and deliverables. Arete & Co. retains portfolio rights unless requested otherwise in writing.',14,y,{w:188,gap:4});
+      doc.addPage();y=pdfHeader(doc,'Service Agreement');
+      y=pdfSH(doc,'05','Confidentiality',y);y=pdfT(doc,'Both parties keep confidential any non-public information shared during this engagement. Obligation survives termination.',14,y,{w:188,gap:4});
+      y=pdfSH(doc,'06','Cancellation & Termination',y);
+      y=pdfBlt(doc,'Client Cancellation: All payments non-refundable. Client receives deliverables from fully paid milestones only.',14,y);
+      y=pdfBlt(doc,'Arete & Co. Cancellation: Completed work delivered within 7 business days. Overpayments refunded within 14 business days.',14,y);
+      y=pdfBlt(doc,'Abandonment: 60 days no communication = project abandoned. Client retains fully paid deliverables. No further obligations.',14,y);y+=3;
+      y=pdfSH(doc,'07','Infrastructure',y);y=pdfT(doc,'All infrastructure managed under Arete & Co. during the build. Full credential transfer to Client is a defined deliverable at launch.',14,y,{w:188,gap:4});
+      y=pdfSH(doc,'08','Governing Law',y);y=pdfT(doc,'Governed by laws of the State of Michigan. Disputes resolved in Wayne County, Michigan.',14,y,{w:188,gap:8});
+      y=pdfSH(doc,'09','Signatures',y);y=pdfT(doc,'By signing below, both parties agree to the terms of this Agreement.',14,y,{w:188,gap:6});
+      pdfSig(doc,y);pdfFooter(doc,1,2);doc.setPage(2);pdfFooter(doc,2,2);
+      doc.save(`Arete_ServiceAgreement_${l.name.replace(/\s+/g,'_')}.pdf`);
+
+    }else if(type==='invoice'){
+      let y=pdfHeader(doc,'Invoice');
+      doc.setFont('helvetica','bold');doc.setFontSize(17);doc.setTextColor(...PDF.navy);doc.text('INVOICE',108,y+7,{align:'center'});y+=14;
+      const invNum=`INV-${Date.now().toString().slice(-6)}`;
+      pdfBox(doc,'Invoice #',invNum,14,y,46);pdfBox(doc,'Issue Date',today,62,y,46);pdfBox(doc,'Project',l.project||'—',110,y,92);y+=18;
+      pdfBox(doc,'Bill To',l.name,14,y,91);pdfBox(doc,'Contact',l.contact||'—',109,y,93);y+=20;
+      y=pdfSH(doc,'','Unpaid Balance Due',y);
+      if(!unpaid.length){
+        doc.setFillColor(...PDF.light);doc.rect(14,y,188,12,'F');doc.setFont('helvetica','italic');doc.setFontSize(9);doc.setTextColor(...PDF.mid);doc.text('All installments paid. Balance: $0',108,y+7.5,{align:'center'});y+=16;
+      }else{
+        y=pdfTH(doc,[{label:'Milestone',w:120},{label:'Status',w:36},{label:'Amount Due',w:32}],y);
+        unpaid.forEach((inst,i)=>{y=pdfTR(doc,[{text:inst.label,w:120,bold:true},{text:'UNPAID',w:36,clr:[196,149,106],bold:true},{text:'$'+inst.amount.toLocaleString(),w:32,bold:true,clr:PDF.navy,right:true}],y,i%2===0);});
+        doc.setFillColor(...PDF.navy);doc.rect(14,y,188,9,'F');doc.setFont('helvetica','bold');doc.setFontSize(9);doc.setTextColor(...PDF.white);
+        doc.text('TOTAL DUE',17,y+6);doc.text('$'+unpaidTotal.toLocaleString(),199,y+6,{align:'right'});y+=13;
+      }
+      if(paidTotal>0){y+=3;doc.setFont('helvetica','normal');doc.setFontSize(8);doc.setTextColor(...PDF.mid);doc.text(`Previously collected: $${paidTotal.toLocaleString()}  \u00b7  Total project: $${(l.value||0).toLocaleString()}`,14,y);y+=8;}
+      y=pdfSH(doc,'','Payment Methods',y);
+      y=pdfTH(doc,[{label:'Method',w:50},{label:'Details',w:138}],y);
+      [['Stripe','[Payment link]'],['Apple Pay','Via Stripe checkout'],['Cash App','[$CashTag]'],['PayPal','[PayPal link]'],['Venmo','[@VenmoHandle]']].forEach((r,i)=>{y=pdfTR(doc,[{text:r[0],w:50,bold:true},{text:r[1],w:138}],y,i%2===0);});
+      y+=6;pdfT(doc,'Questions? ashleybreannacrockett@gmail.com  \u00b7  aretebuilds.com',14,y,{italic:true,clr:PDF.mid,w:188});
+      pdfFooter(doc,1,1);doc.save(`Arete_Invoice_${l.name.replace(/\s+/g,'_')}_${invNum}.pdf`);
+
+    }else if(type==='nda'){
+      let y=pdfHeader(doc,'Non-Disclosure Agreement');
+      doc.setFont('helvetica','bold');doc.setFontSize(15);doc.setTextColor(...PDF.navy);doc.text('NON-DISCLOSURE AGREEMENT',108,y+7,{align:'center'});y+=12;
+      doc.setFont('helvetica','normal');doc.setFontSize(8);doc.setTextColor(...PDF.mid);doc.text(`Mutual  \u00b7  2-Year Term  \u00b7  Michigan  \u00b7  ${today}`,108,y+2,{align:'center'});y+=11;
+      pdfBox(doc,'Party A — Service Provider','Ashley Crockett / Arete & Co.',14,y,91);pdfBox(doc,'Party B — Client',l.name,109,y,93);y+=20;
+      y=pdfT(doc,`This Mutual Non-Disclosure Agreement is entered into as of ${today} between Ashley Crockett / Arete & Co. ("Party A") and ${l.name} ("Party B"). Both parties wish to explore a potential business relationship and may share confidential information in connection with that exploration.`,14,y,{w:188,gap:5});
+      y=pdfSH(doc,'01','Definition of Confidential Information',y);
+      y=pdfT(doc,'"Confidential Information" means any non-public information disclosed by either party, including business strategies, technical architecture, product concepts, client lists, financial data, pricing, and any information a reasonable person would understand to be confidential.',14,y,{w:188,gap:4});
+      y=pdfSH(doc,'02','Obligations',y);
+      y=pdfBlt(doc,'Hold the other\'s Confidential Information in strict confidence',14,y);
+      y=pdfBlt(doc,'No disclosure to third parties without prior written consent',14,y);
+      y=pdfBlt(doc,'Use solely for evaluating or executing the potential business relationship',14,y);
+      y=pdfBlt(doc,'Limit access to those with a need to know',14,y);y+=3;
+      y=pdfSH(doc,'03','Exclusions',y);
+      y=pdfT(doc,'Excludes information that is publicly available, was already known at time of disclosure, is independently developed, or is required to be disclosed by law.',14,y,{w:188,gap:4});
+      y=pdfSH(doc,'04','Term & Governing Law',y);
+      y=pdfT(doc,'Effective as signed, two (2) year term. Confidentiality obligations survive termination. Governed by the laws of the State of Michigan; disputes in Wayne County, Michigan.',14,y,{w:188,gap:4});
+      y=pdfSH(doc,'05','No License',y);
+      y=pdfT(doc,'Nothing herein grants either party any rights, licenses, or ownership interest in the other party\'s Confidential Information, IP, or business.',14,y,{w:188,gap:8});
+      y=pdfSH(doc,'06','Signatures',y);
+      y=pdfT(doc,'By signing below, both parties agree to be bound by the terms of this Agreement.',14,y,{w:188,gap:6});
+      pdfSig(doc,y);pdfFooter(doc,1,1);
+      doc.save(`Arete_NDA_${l.name.replace(/\s+/g,'_')}.pdf`);
+    }
+    btn.classList.remove('generating');btn.classList.add('done');btn.innerHTML='✓ Downloaded';
+    setTimeout(()=>{btn.classList.remove('done');btn.innerHTML=orig;},3000);
+  }
+  // ── END PDF GENERATION ────────────────────────────────────────────────────
 </script>
 </body>
 </html>
