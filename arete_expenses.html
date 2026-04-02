@@ -3,7 +3,7 @@
 <head>
 <script>
 (function(){
-  if(sessionStorage.getItem('arete_ops_auth')!=='true'){
+  if(localStorage.getItem('arete_ops_auth')!=='true'){ // ← localStorage + correct key
     window.location.href='arete_ops.html';
   }
 })();
@@ -141,14 +141,11 @@
     <div class="stat-cell"><span class="stat-label">Top Category</span><span class="stat-value" id="s-topcat" style="font-size:.95rem;">—</span><span class="stat-sub" id="s-topamt">—</span></div>
   </div>
 
-  <!-- MONTHLY CHART -->
   <div class="chart-section">
     <div class="chart-header">Monthly Spend — <span id="chart-year">2026</span></div>
     <div class="bar-chart" id="bar-chart"></div>
   </div>
 
-
-  <!-- CONTROLS -->
   <div class="controls">
     <div class="filter-group" id="cat-filters">
       <button class="filter-btn active" data-cat="all" onclick="setFilter('cat','all',this)">All</button>
@@ -169,7 +166,6 @@
     </div>
   </div>
 
-  <!-- TABLE -->
   <div class="table-wrap">
     <table>
       <thead>
@@ -281,9 +277,7 @@ let sortDir = -1;
 let filterCat = 'all';
 let filterDeduct = 'all';
 
-// ── SUPABASE PERSISTENCE ──────────────────────────────
 async function loadExpenses() {
-  // Show loading state
   document.getElementById('empty-state').style.display = 'none';
   document.getElementById('expense-tbody').innerHTML =
     '<tr><td colspan="7" style="text-align:center;color:var(--gray);padding:2rem;letter-spacing:.1em;font-size:.65rem;">LOADING...</td></tr>';
@@ -322,7 +316,6 @@ async function deleteExpense() {
   closeModal();
   render();
 }
-// ─────────────────────────────────────────────────────
 
 function fmt(n) { return '$' + Number(n).toLocaleString('en-US', {minimumFractionDigits:2,maximumFractionDigits:2}); }
 function genId() { return 'e' + Date.now(); }
@@ -387,14 +380,12 @@ function buildChart() {
   const yr = document.getElementById('year-sel')?.value || '2026';
   const chart = document.getElementById('bar-chart');
   document.getElementById('chart-year').textContent = yr === 'all' ? 'All Time' : yr;
-
   const monthly = Array(12).fill(0);
   expenses.forEach(e => {
     if (yr !== 'all' && !e.date.startsWith(yr)) return;
     const m = parseInt(e.date.split('-')[1]) - 1;
     monthly[m] += Number(e.amount);
   });
-
   const max = Math.max(...monthly, 1);
   chart.innerHTML = monthly.map((v, i) => `
     <div class="bar-wrap">
@@ -408,12 +399,9 @@ function buildChart() {
 function render() {
   buildCatFilters();
   buildChart();
-
   const list = sorted(filtered());
   const tbody = document.getElementById('expense-tbody');
   const empty = document.getElementById('empty-state');
-
-  // Stats
   const allYr = expenses.filter(e => {
     const yr = document.getElementById('year-sel')?.value || 'all';
     return yr === 'all' || e.date.startsWith(yr);
@@ -421,12 +409,9 @@ function render() {
   const total = allYr.reduce((s,e) => s+Number(e.amount), 0);
   const deduct = allYr.filter(e=>e.deductible).reduce((s,e) => s+Number(e.amount), 0);
   const nondeduct = total - deduct;
-
-  // Top category
   const byCat = {};
   allYr.forEach(e => { byCat[e.category] = (byCat[e.category]||0) + Number(e.amount); });
   const topCat = Object.entries(byCat).sort((a,b)=>b[1]-a[1])[0];
-
   document.getElementById('s-count').textContent = allYr.length;
   document.getElementById('s-total').textContent = fmt(total);
   document.getElementById('s-deduct').textContent = fmt(deduct);
@@ -435,14 +420,8 @@ function render() {
   document.getElementById('s-topamt').textContent = topCat ? fmt(topCat[1]) : '—';
   document.getElementById('hdr-total').textContent = fmt(total);
   document.getElementById('hdr-deduct').textContent = fmt(deduct);
-
-  if (!list.length) {
-    tbody.innerHTML = '';
-    empty.style.display = 'block';
-    return;
-  }
+  if (!list.length) { tbody.innerHTML = ''; empty.style.display = 'block'; return; }
   empty.style.display = 'none';
-
   tbody.innerHTML = list.map(e => {
     const col = CAT_COLORS[e.category] || '#888';
     return `<tr>
@@ -460,7 +439,6 @@ function render() {
   }).join('');
 }
 
-// MODAL
 function openAdd() {
   editId = null;
   document.getElementById('modal-title').textContent = 'Add Expense';
@@ -503,7 +481,6 @@ async function saveExpense() {
   }
   document.getElementById('f-vendor').style.borderColor = '';
   document.getElementById('f-amount').style.borderColor = '';
-
   const data = {
     id: editId || genId(),
     date: document.getElementById('f-date').value,
@@ -514,7 +491,6 @@ async function saveExpense() {
     notes: document.getElementById('f-notes').value.trim(),
     method: document.getElementById('f-method').value,
   };
-
   if (editId) {
     const idx = expenses.findIndex(x => x.id === editId);
     expenses[idx] = data;
@@ -526,9 +502,7 @@ async function saveExpense() {
   render();
 }
 
-function confirmDelete(id) {
-  openEdit(id);
-}
+function confirmDelete(id) { openEdit(id); }
 
 function closeModal() {
   document.getElementById('modal').classList.remove('open');
@@ -562,7 +536,6 @@ document.getElementById('modal').addEventListener('click', e => {
   if (e.target === document.getElementById('modal')) closeModal();
 });
 
-// Boot — load from Supabase
 loadExpenses();
 </script>
 </body>

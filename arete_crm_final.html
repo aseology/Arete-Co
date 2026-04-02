@@ -387,13 +387,14 @@
   // ─────────────────────────────────────────────────────────────────────────
 
   const sb = supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
-  const SESSION_KEY = 'arete_auth';
+  const SESSION_KEY = 'arete_ops_auth;
+  
 
   // LOGIN
   function attemptLogin() {
     const input = document.getElementById('login-pw');
     if (input.value === PASSWORD) {
-      sessionStorage.setItem(SESSION_KEY,'true');
+      localStorage.setItem(SESSION_KEY,'true');
       document.getElementById('login-screen').classList.add('hidden');
       document.getElementById('app').classList.add('visible');
       document.getElementById('login-error').textContent='';
@@ -405,12 +406,12 @@
     }
   }
   function logout() {
-    sessionStorage.removeItem(SESSION_KEY);
+    localStorage.removeItem(SESSION_KEY);
     document.getElementById('login-screen').classList.remove('hidden');
     document.getElementById('app').classList.remove('visible');
     document.getElementById('login-pw').value='';
   }
-  if (sessionStorage.getItem(SESSION_KEY)==='true') {
+  if (localStorage.getItem(SESSION_KEY)==='true') {
     document.getElementById('login-screen').classList.add('hidden');
     document.getElementById('app').classList.add('visible');
   }
