@@ -388,7 +388,7 @@
 
   const sb = supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
   const SESSION_KEY = 'arete_ops_auth;
-  
+
 
   // LOGIN
   function attemptLogin() {
@@ -411,10 +411,12 @@
     document.getElementById('app').classList.remove('visible');
     document.getElementById('login-pw').value='';
   }
+  document.addEventListener('DOMContentLoaded' , function() {})
   if (localStorage.getItem(SESSION_KEY)==='true') {
     document.getElementById('login-screen').classList.add('hidden');
     document.getElementById('app').classList.add('visible');
   }
+});
 
   // DATA
   const STAGES = ['lead','brief','proposal','active','closed'];
