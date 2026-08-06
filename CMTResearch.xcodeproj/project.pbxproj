@@ -48,7 +48,7 @@
 /* End PBXFileReference section */
 
 /* Begin PBXGroup section */
-		000000000000000000000003 /* = {
+		000000000000000000000003 = {
 			isa = PBXGroup;
 			children = (
 				000000000000000000000004 /* CMTResearch */,
